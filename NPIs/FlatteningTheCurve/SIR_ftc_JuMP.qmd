@@ -1,11 +1,16 @@
 ---
 title: '''Flattening the curve'' optimisation on an SIR model using JuMP.jl'
 jupyter: julia-1.11
-format: 
+format:
     pdf: 
-        documentclass: scrartcl
-        papersize: a4paper
+        mainfont: "Arial"
+        sansfont: "Open Sans"
+        monofont: "Andale Mono"
+        code-overflow: wrap
     docx: default
+    html: 
+        code-overflow: wrap
+    gfm: default
 ---
 
 
