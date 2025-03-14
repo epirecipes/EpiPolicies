@@ -194,7 +194,7 @@ C_opt = value.(C)
 ```
 
 ```{julia}
-plot(ts, S_opt, label="S", xlabel="Time", ylabel="Number", legend=:right, xlim=(0,60))
+plot(ts, S_opt, label="S", xlabel="Time", ylabel="Number", legend=:right)
 plot!(ts, I_opt, label="I")
 plot!(ts, C_opt, label="C")
 plot!(ts, υ_opt, label="Optimized υ")
