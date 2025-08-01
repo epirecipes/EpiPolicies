@@ -22,7 +22,7 @@ The following examples demonstrate the application of [JuMP](https://github.com/
 
 ## Contributing
 
-We welcome contributions to this repository. Each example should be placed in its own directory, as a Quarto (.qmd) file. To assist in conversion to the different file formats, please avoid multiple definitions within a single cell (wrapping a cell with begin and end if this is necessary). The header of the notebook should contain a list of output formats, for example:
+We welcome contributions to this repository. Each example should be placed in its own directory, as a Quarto (`.qmd`) file. The header of the notebook should contain a list of output formats, for example:
 
 ```yaml
 ---
@@ -37,7 +37,7 @@ format:
 ---
 ```
 
-To render Quarto files, install Quarto and run the following command in the example directory (where {FILENAME_OF_QMD} is the name of the Quarto file):
+To render Quarto files, install Quarto and run the following command in the example directory (where `{FILENAME_OF_QMD}` is the name of the Quarto file):
 
 ```bash
 quarto render {FILENAME_OF_QMD}
