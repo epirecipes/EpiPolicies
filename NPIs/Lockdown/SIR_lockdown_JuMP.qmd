@@ -1,6 +1,7 @@
 ---
 title: Lockdown optimisation on an SIR model using JuMP.jl
-jupyter: julia-1.11
+date: 2025-03-10
+author: Simon Frost (@sdwfrost) and Sandra Montes (@slmontes)
 format:
     pdf: 
         mainfont: "Arial"
@@ -11,9 +12,8 @@ format:
     html: 
         code-overflow: wrap
     gfm: default
+jupyter: julia-1.11
 ---
-
-
 
 Initial version [here](https://github.com/epirecipes/sir-julia/blob/master/markdown/function_map_lockdown_jump/function_map_lockdown_jump.md) by Simon Frost (@sdwfrost)\
 Current version Sandra Montes (@slmontes), 2025-03-10
