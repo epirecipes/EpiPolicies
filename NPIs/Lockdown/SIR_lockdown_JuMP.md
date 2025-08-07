@@ -1,5 +1,6 @@
 # Lockdown optimisation on an SIR model using JuMP.jl
-
+Simon Frost (@sdwfrost) and Sandra Montes (@slmontes)
+2025-03-10
 
 Initial version
 [here](https://github.com/epirecipes/sir-julia/blob/master/markdown/function_map_lockdown_jump/function_map_lockdown_jump.md)
@@ -140,7 +141,7 @@ plot(sol1,
      xlim=(0, 100),
      labels=["S" "I" "C"],
      xlabel="Time (days)",
-     ylabel="Fraction of population")
+     ylabel="Fraction of population",linewidth=1.5)
 ```
 
 ![](SIR_lockdown_JuMP_files/figure-commonmark/cell-10-output-1.svg)
@@ -201,8 +202,8 @@ plot(sol2,
      xlim=(0, 100),
      labels=["S" "I" "C"],
      xlabel="Time (days)",
-     ylabel="Fraction of population")
-plot!(ts, υ_test, color=:gray, label="υ 20 days from peak")
+     ylabel="Fraction of population",linewidth=1.5)
+plot!(ts, υ_test, color=:gray, label="υ 20 days from peak",linewidth=1.5)
 ```
 
 ![](SIR_lockdown_JuMP_files/figure-commonmark/cell-16-output-1.svg)
@@ -300,11 +301,11 @@ also identified a time to start the lockdown that is not the peak of the
 infection curve.
 
 ``` julia
-plot(ts, S_opt, label="S", xlabel="Time (days)", ylabel="Fraction of population")
-plot!(ts, I_opt, label="I")
-plot!(ts, C_opt, label="C")
-plot!(ts, υ_test, color=:gray, linestyle=:dash, label="υ 20 days from peak")
-plot!(ts, υ_opt, label="Optimized υ")
+plot(ts, S_opt, label="S", xlabel="Time (days)", ylabel="Fraction of population",linewidth=1.5)
+plot!(ts, I_opt, label="I",linewidth=1.5)
+plot!(ts, C_opt, label="C",linewidth=1.5)
+plot!(ts, υ_test, color=:gray, linestyle=:dash, label="υ 20 days from peak",linewidth=1.5)
+plot!(ts, υ_opt, label="Optimized υ",linewidth=1.5)
 ```
 
 ![](SIR_lockdown_JuMP_files/figure-commonmark/cell-26-output-1.svg)
@@ -347,8 +348,8 @@ plot(ts,
      ylabel="Cumulative incidence",
      ylim=(0,1),
      xlim=(0,40),
-     legend=false)
-vline!([t_opt])
+     legend=false,linewidth=1.5)
+vline!([t_opt],linewidth=1.5)
 ```
 
 ![](SIR_lockdown_JuMP_files/figure-commonmark/cell-29-output-1.svg)
@@ -372,11 +373,11 @@ Rtsol = solve(Rtprob, NewtonRaphson(), abstol = 1e-9).u[1];
 ```
 
 ``` julia
-plot(ts, Rₜ_opt, label="Rₜ", xlabel="Time", ylabel="Number", legend=:topright, xlim=(0,60))
-plot!(ts, Rₜ′_opt, label="Rₜ optimised")
-plot!(ts, υ_opt, label="Optimized υ")
-vline!([Rtsol], color=:gray, alpha=0.5, label=false)
-hline!([1.0], color=:gray, alpha=0.5, label=false)
+plot(ts, Rₜ_opt, label="Rₜ", xlabel="Time (days)", ylabel="Effective reproductive number", legend=:topright, xlim=(0,60),linewidth=1.5)
+plot!(ts, Rₜ′_opt, label="Rₜ optimised",linewidth=1.5)
+plot!(ts, υ_opt, label="Optimized υ",linewidth=1.5)
+vline!([Rtsol], color=:gray, linestyle=:dash, alpha=0.5, label=false,linewidth=1.5)
+hline!([1.0], color=:gray, linestyle=:dash, alpha=0.5, label=false,linewidth=1.5)
 ```
 
 ![](SIR_lockdown_JuMP_files/figure-commonmark/cell-32-output-1.svg)

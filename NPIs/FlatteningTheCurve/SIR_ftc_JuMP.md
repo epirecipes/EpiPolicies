@@ -100,7 +100,7 @@ plot(sol1,
      xlim=(0, 100),
      labels=["S" "I" "C"],
      xlabel="Time (days)",
-     ylabel="Fraction of population")
+     ylabel="Fraction of population",linewidth=1.5)
 ```
 
 ![](SIR_ftc_JuMP_files/figure-commonmark/cell-8-output-1.svg)
@@ -209,12 +209,12 @@ C_opt = value.(C)
 ```
 
 ``` julia
-plot(ts, S_opt, label="S", xlabel="Time", ylabel="Number", legend=:right)
-plot!(ts, I_opt, label="I")
-plot!(ts, C_opt, label="C")
-plot!(ts, υ_opt, label="Optimized υ")
-hline!([I_max], color=:gray, alpha=0.5, label="Threshold I")
-hline!([υ_max], color=:orange, alpha=0.5, label="Threshold υ")
+plot(ts, S_opt, label="S", xlabel="Time (days)", ylabel="Fraction of population", legend=:right,linewidth=1.5)
+plot!(ts, I_opt, label="I",linewidth=1.5)
+plot!(ts, C_opt, label="C",linewidth=1.5)
+plot!(ts, υ_opt, label="Optimized υ",linewidth=1.5)
+hline!([I_max], color=:gray, alpha=0.5, linestyle=:dash, label="Threshold I",linewidth=1.5)
+hline!([υ_max], color=:orange, alpha=0.5, linestyle=:dash, label="Threshold υ",linewidth=1.5)
 ```
 
 ![](SIR_ftc_JuMP_files/figure-commonmark/cell-18-output-1.svg)
@@ -248,11 +248,11 @@ Rtsol = solve(Rtprob, NewtonRaphson(), abstol = 1e-9).u[1];
 ```
 
 ``` julia
-plot(ts, Rₜ_opt, label="Rₜ", xlabel="Time", ylabel="Number", legend=:topright, xlim=(0,60))
-plot!(ts, Rₜ′_opt, label="Rₜ optimised")
-plot!(ts, υ_opt, label="Optimized υ")
-vline!([Rtsol], color=:gray, alpha=0.5, label=false)
-hline!([1.0], color=:gray, alpha=0.5, label=false)
+plot(ts, Rₜ_opt, label="Rₜ", xlabel="Time (days)", ylabel="Effective reproductive number", legend=:topright, xlim=(0,60),linewidth=1.5)
+plot!(ts, Rₜ′_opt, label="Rₜ optimised",linewidth=1.5)
+plot!(ts, υ_opt, label="Optimized υ",linewidth=1.5)
+vline!([Rtsol], color=:gray, linestyle=:dash, alpha=0.5, label=false,linewidth=1.5)
+hline!([1.0], color=:gray, linestyle=:dash, alpha=0.5, label=false,linewidth=1.5)
 ```
 
 ![](SIR_ftc_JuMP_files/figure-commonmark/cell-22-output-1.svg)

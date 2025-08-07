@@ -102,7 +102,7 @@ plot(sol1,
      xlim=(0, 100),
      labels=["S" "I" "C"],
      xlabel="Time (days)",
-     ylabel="Fraction of population")
+     ylabel="Fraction of population",linewidth=1.5)
 ```
 
 ![](SIR_vaccination_JuMP_files/figure-commonmark/cell-8-output-1.svg)
@@ -117,7 +117,7 @@ p2[3] = 0.05;   #Set maximum vaccination rate to 0.05
 β = p2[1]
 γ = p2[2]
 υ_max = p2[3]
-υ_total = 1     # Maximum cost
+υ_total = 0.75     # Maximum cost
 
 S0 = u0[1]
 I0 = u0[2]
@@ -205,10 +205,10 @@ C_opt = value.(C)
 ```
 
 ``` julia
-plot(ts, S_opt, label="S", xlabel="Time", ylabel="Number")
-plot!(ts, I_opt, label="I")
-plot!(ts, C_opt, label="C")
-plot!(ts, υ_opt, label="Optimized υ")
+plot(ts, S_opt, label="S", xlabel="Time (days)", ylabel="Fraction of population",linewidth=1.5)
+plot!(ts, I_opt, label="I",linewidth=1.5)
+plot!(ts, C_opt, label="C",linewidth=1.5)
+plot!(ts, υ_opt, label="Optimized υ",linewidth=1.5)
 ```
 
 ![](SIR_vaccination_JuMP_files/figure-commonmark/cell-18-output-1.svg)
@@ -221,7 +221,7 @@ peak_value_opt, peak_index_opt = findmax(I_opt)
 println("The maximum fraction of infected at a `dt` time is: ", peak_value_opt)
 ```
 
-    The maximum fraction of infected at a `dt` time is: 0.034552884095835804
+    The maximum fraction of infected at a `dt` time is: 0.034552855906167204
 
 Again, we can calculate the effective reproductive number, `Rₜ′` in the
 presence of the intervention:
@@ -242,11 +242,11 @@ Rtsol = solve(Rtprob, NewtonRaphson(), abstol = 1e-9).u[1];
 ```
 
 ``` julia
-plot(ts, Rₜ_opt, label="Rₜ", xlabel="Time", ylabel="Number", legend=:topright, xlim=(0,100))
-plot!(ts, Rₜ′_opt, label="Rₜ optimised")
-plot!(ts, υ_opt, label="Optimized υ")
-vline!([Rtsol], color=:gray, alpha=0.5, label=false)
-hline!([1.0], color=:gray, alpha=0.5, label=false)
+plot(ts, Rₜ_opt, label="Rₜ", xlabel="Time (days)", ylabel="Effective reproductive number", legend=:topright, xlim=(0,100),linewidth=1.5)
+plot!(ts, Rₜ′_opt, label="Rₜ optimised",linewidth=1.5)
+plot!(ts, υ_opt, label="Optimized υ",linewidth=1.5)
+vline!([Rtsol], color=:gray, linestyle=:dash, alpha=0.5, label=false,linewidth=1.5)
+hline!([1.0], color=:gray, linestyle=:dash, alpha=0.5, label=false,linewidth=1.5)
 ```
 
 ![](SIR_vaccination_JuMP_files/figure-commonmark/cell-22-output-1.svg)

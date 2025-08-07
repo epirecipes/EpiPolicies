@@ -12,7 +12,6 @@ format:
     html: 
         code-overflow: wrap
     gfm: default
-jupyter: julia-1.11
 ---
 
 Initial version [here](https://github.com/epirecipes/sir-julia/blob/master/markdown/function_map_lockdown_jump/function_map_lockdown_jump.md) by Simon Frost (@sdwfrost)\
@@ -133,7 +132,7 @@ plot(sol1,
      xlim=(0, 100),
      labels=["S" "I" "C"],
      xlabel="Time (days)",
-     ylabel="Fraction of population")
+     ylabel="Fraction of population",linewidth=1.5)
 ```
 
 Now we find the peak value of infected individuals and the time at which it occurs:
@@ -185,8 +184,8 @@ plot(sol2,
      xlim=(0, 100),
      labels=["S" "I" "C"],
      xlabel="Time (days)",
-     ylabel="Fraction of population")
-plot!(ts, υ_test, color=:gray, label="υ 20 days from peak")
+     ylabel="Fraction of population",linewidth=1.5)
+plot!(ts, υ_test, color=:gray, label="υ 20 days from peak",linewidth=1.5)
 ```
 
 ## Searching for the optimal intervention time
@@ -274,11 +273,11 @@ C_opt = value.(C)
 Plotting the results shows that the optimiser has identified a policy similar to the one suggested by [Britton and Leskela (2022)](https://arxiv.org/abs/2202.07780), which is a single lockdown of intensity `υ_max` and a duration `υ_total/υ_max`. But the optimiser has also identified a time to start the lockdown that is not the peak of the infection curve.
 
 ```{julia}
-plot(ts, S_opt, label="S", xlabel="Time (days)", ylabel="Fraction of population")
-plot!(ts, I_opt, label="I")
-plot!(ts, C_opt, label="C")
-plot!(ts, υ_test, color=:gray, linestyle=:dash, label="υ 20 days from peak")
-plot!(ts, υ_opt, label="Optimized υ")
+plot(ts, S_opt, label="S", xlabel="Time (days)", ylabel="Fraction of population",linewidth=1.5)
+plot!(ts, I_opt, label="I",linewidth=1.5)
+plot!(ts, C_opt, label="C",linewidth=1.5)
+plot!(ts, υ_test, color=:gray, linestyle=:dash, label="υ 20 days from peak",linewidth=1.5)
+plot!(ts, υ_opt, label="Optimized υ",linewidth=1.5)
 ```
 
 ```{julia}
@@ -310,8 +309,8 @@ plot(ts,
      ylabel="Cumulative incidence",
      ylim=(0,1),
      xlim=(0,40),
-     legend=false)
-vline!([t_opt])
+     legend=false,linewidth=1.5)
+vline!([t_opt],linewidth=1.5)
 ```
 
 We can also calculate the effective reproductive number, `Rₜ′` in the presence of the intervention 
@@ -332,11 +331,11 @@ Rtsol = solve(Rtprob, NewtonRaphson(), abstol = 1e-9).u[1];
 ```
 
 ```{julia}
-plot(ts, Rₜ_opt, label="Rₜ", xlabel="Time", ylabel="Number", legend=:topright, xlim=(0,60))
-plot!(ts, Rₜ′_opt, label="Rₜ optimised")
-plot!(ts, υ_opt, label="Optimized υ")
-vline!([Rtsol], color=:gray, alpha=0.5, label=false)
-hline!([1.0], color=:gray, alpha=0.5, label=false)
+plot(ts, Rₜ_opt, label="Rₜ", xlabel="Time (days)", ylabel="Effective reproductive number", legend=:topright, xlim=(0,60),linewidth=1.5)
+plot!(ts, Rₜ′_opt, label="Rₜ optimised",linewidth=1.5)
+plot!(ts, υ_opt, label="Optimized υ",linewidth=1.5)
+vline!([Rtsol], color=:gray, linestyle=:dash, alpha=0.5, label=false,linewidth=1.5)
+hline!([1.0], color=:gray, linestyle=:dash, alpha=0.5, label=false,linewidth=1.5)
 ```
 
 ## Discussion
