@@ -5,6 +5,10 @@ Optimal control for infectious disease epidemics.
 
 This repository contains implementations of optimal control problems for infectious disease epidemics, showcasing multiple epidemiological models and optimisation frameworks. It provides a comparison of different approaches to solving epidemiological optimisation problems.
 
+**Related preprint is now available:**  
+“Exploring epidemic control policies using nonlinear programming and mathematical models”
+[Read it on arXiv](https://arxiv.org/abs/2508.05290)
+
 ## Examples
 
 The following examples demonstrate the application of [JuMP](https://github.com/jump-dev/JuMP.jl) ([Julia](https://julialang.org/)), in combination with the [IPOPT](https://github.com/coin-or/Ipopt) solver, to assess control intervention strategies within a Susceptible-Infected-Recovered (SIR) model. These examples assess various strategic objectives, such as minimising total infections during an epidemic through lockdown measures, "flattening the curve", or vaccination efforts.
