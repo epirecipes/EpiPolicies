@@ -1,0 +1,969 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.6.43">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Sandra Montes (@slmontes)">
+<meta name="dcterms.date" content="2025-10-08">
+
+<title>Exponential infection model with a lockdown control using R + IPOPT</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="expSIR_in_R_files/libs/clipboard/clipboard.min.js"></script>
+<script src="expSIR_in_R_files/libs/quarto-html/quarto.js"></script>
+<script src="expSIR_in_R_files/libs/quarto-html/popper.min.js"></script>
+<script src="expSIR_in_R_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="expSIR_in_R_files/libs/quarto-html/anchor.min.js"></script>
+<link href="expSIR_in_R_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="expSIR_in_R_files/libs/quarto-html/quarto-syntax-highlighting-d4d76bf8491c20bad77d141916dc28e1.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="expSIR_in_R_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="expSIR_in_R_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="expSIR_in_R_files/libs/bootstrap/bootstrap-69cfdfb4d7dc33ca24876afa0d06903f.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body>
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+<div class="quarto-alternate-formats"><h2>Other Formats</h2><ul><li><a href="expSIR_in_R.pdf"><i class="bi bi-file-pdf"></i>PDF</a></li><li><a href="expSIR_in_R.docx"><i class="bi bi-file-word"></i>MS Word</a></li><li><a href="expSIR_in_R.md"><i class="bi bi-file-code"></i>Github (GFM)</a></li></ul></div></div>
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Exponential infection model with a lockdown control using R + IPOPT</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Sandra Montes (<span class="citation" data-cites="slmontes">@slmontes</span>) </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">October 8, 2025</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="introduction" class="level2">
+<h2 class="anchored" data-anchor-id="introduction">Introduction</h2>
+<p>This example is based on the <a href="https://github.com/epirecipes/EpiPolicies/blob/main/ToyModel_indirect_n_direct/exponentialSIR_indirect_n_direct.qmd">exponential infection model</a> that compares indirect and direct optimal control methods. Here we replicate the NLP formulation of the optimal control problem solved using Interior Point Optimisation (IPOPT), but in R instead of Julia.</p>
+<p>The model focuses on a single compartment of infected individuals (<code>I</code>). The intervention is modelled as a time-dependent control variable <code>υ(t)</code> that reduces the effective transmission rate by a factor of <code>1 - υ(t)</code>, where <code>υ(t) ∈ [0, 1]</code> represents the intensity of the applied control (e.g., social distancing or lockdown measures).</p>
+<p>The model is described by:</p>
+<p><span class="math display">\[
+\begin{aligned}
+\dfrac{\mathrm{d}I}{\mathrm{dt}} &amp;= (\beta * (1 - υ(t)) * N - \gamma) * I
+\end{aligned}
+\]</span></p>
+<p>Here, <code>β</code> is the transmission rate, <code>γ</code> is the recovery rate, and <code>N</code> is the total population.</p>
+<p>In this example, the goal is to minimise both the disease burden and the cost of interventions over time <code>[0, T]</code>. The objective function balances:</p>
+<ul>
+<li><code>A × I(t)</code> - Disease cost</li>
+<li><code>B × υ(t)²</code> - Intervention cost</li>
+</ul>
+<p><span class="math display">\[
+\begin{aligned}
+\min_{υ(t)} \sum_{t=1}^{T+1} \Delta t \cdot \left(A \cdot I_t + B \cdot υ_t^2\right)
+\end{aligned}
+\]</span></p>
+</section>
+<section id="setup" class="level2">
+<h2 class="anchored" data-anchor-id="setup">Setup</h2>
+<p>The package <code>ipoptr</code> has not been updated since 2012, so it is no longer found in the CRAN repository. The recommended approach is to build the R interface directly from the official COIN-OR IPOPT source code, which handles modern R versions and systems properly. This method uses the official COIN-OR R interface that comes bundled with IPOPT itself, it creates an <code>ipoptr</code> package that you can load with <code>library(ipoptr)</code>.</p>
+<p>You can follow these steps below, or for more detailed installation instructions, system-specific requirements, and troubleshooting, refer to the <a href="https://coin-or.github.io/Ipopt/INSTALL.html">official COIN-OR IPOPT installation guide</a>:</p>
+<section id="install-ipopt" class="level3">
+<h3 class="anchored" data-anchor-id="install-ipopt">Install IPOPT</h3>
+<p><strong>On macOS (using Homebrew):</strong></p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">brew</span> install ipopt</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><strong>On Ubuntu/Debian:</strong></p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> apt-get update</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sudo</span> apt-get install coinor-libipopt-dev</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><strong>On Windows:</strong></p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Using conda (recommended)</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="ex">conda</span> install <span class="at">-c</span> conda-forge ipopt</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="co"># OR download from official website and install manually</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="co"># https://github.com/coin-or/Ipopt/releases</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="set-up-environment-variables" class="level3">
+<h3 class="anchored" data-anchor-id="set-up-environment-variables">Set up environment variables</h3>
+<p><strong>On macOS:</strong></p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="bu">export</span> <span class="va">PKG_CONFIG_PATH</span><span class="op">=</span>/opt/homebrew/lib/pkgconfig:<span class="va">$PKG_CONFIG_PATH</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="ex">pkg-config</span> <span class="at">--cflags</span> <span class="at">--libs</span> ipopt      <span class="co"># should print include/lib flags</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><strong>On Ubuntu/Debian:</strong></p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Usually not needed as system package manager handles this</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="co"># But if needed:</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="bu">export</span> <span class="va">PKG_CONFIG_PATH</span><span class="op">=</span>/usr/lib/pkgconfig:<span class="va">$PKG_CONFIG_PATH</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="ex">pkg-config</span> <span class="at">--cflags</span> <span class="at">--libs</span> ipopt</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><strong>On Windows:</strong></p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># If using conda, usually not needed</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="co"># If manual installation, set paths to your IPOPT installation</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="bu">set</span> IPOPT_DIR=C:<span class="dt">\p</span>ath<span class="dt">\t</span>o<span class="dt">\y</span>our<span class="dt">\i</span>popt<span class="dt">\i</span>nstallation</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="clone-and-build-from-coin-or-source" class="level3">
+<h3 class="anchored" data-anchor-id="clone-and-build-from-coin-or-source">Clone and build from COIN-OR source</h3>
+<div class="sourceCode" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> clone https://github.com/coin-or/Ipopt.git</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="ex">Rscript</span> <span class="at">-e</span> <span class="st">'install.packages("Ipopt/build/contrib/RInterface", repos=NULL, type="source")'</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+<section id="step-4-set-library-path-and-load-package" class="level3">
+<h3 class="anchored" data-anchor-id="step-4-set-library-path-and-load-package">Step 4: Set library path and load package</h3>
+<p><strong>On macOS:</strong></p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">Sys.setenv</span>(<span class="at">DYLD_FALLBACK_LIBRARY_PATH =</span> <span class="st">"/opt/homebrew/lib"</span>)</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ipoptr)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><strong>On Ubuntu/Debian:</strong></p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Usually not needed as system handles library paths</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ipoptr)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p><strong>On Windows:</strong></p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># If using conda, usually not needed</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="co"># If manual installation, you may need to set PATH</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Sys.setenv(PATH = paste("C:\\path\\to\\your\\ipopt\\bin", Sys.getenv("PATH"), sep=";"))</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ipoptr)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+</section>
+<section id="parameters" class="level2">
+<h2 class="anchored" data-anchor-id="parameters">Parameters</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ipoptr)</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>beta  <span class="ot">&lt;-</span> <span class="fl">0.5</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>gamma <span class="ot">&lt;-</span> <span class="fl">0.25</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>N     <span class="ot">&lt;-</span> <span class="fl">0.9</span></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>υ_max <span class="ot">&lt;-</span> <span class="fl">0.5</span></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>A <span class="ot">&lt;-</span> <span class="dv">10</span></span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>B <span class="ot">&lt;-</span> <span class="fl">0.01</span></span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>I0 <span class="ot">&lt;-</span> <span class="fl">0.1</span></span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>t0 <span class="ot">&lt;-</span> <span class="fl">0.0</span></span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>tf <span class="ot">&lt;-</span> <span class="dv">100</span></span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>dt <span class="ot">&lt;-</span> <span class="fl">0.1</span></span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>T  <span class="ot">&lt;-</span> <span class="fu">as.integer</span>(tf <span class="sc">/</span> dt)  <span class="co"># 1000</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="r-vs-jump-variable-declaration-and-indexing" class="level2">
+<h2 class="anchored" data-anchor-id="r-vs-jump-variable-declaration-and-indexing">R vs JuMP: Variable declaration and indexing</h2>
+<p>This section shows how R handles variable declaration compared to JuMP’s approach. R’s ecosystem lacks the declarative modelling capabilities of JuMP, requiring a more extensive manual management that complicates the development process.</p>
+<section id="r-manual-variable-layout" class="level3">
+<h3 class="anchored" data-anchor-id="r-manual-variable-layout">R : Manual variable layout</h3>
+<p>In R, we must manually organise all decision variables into a single vector (<code>x</code>), provide indexing functions (<code>idxI</code> and <code>idxU</code>), and handle bounds separately from variable declaration.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Decision vector x = [ I[1:(T+1)], υ[1:(T+1)] ]  (length n = 2*(T+1))</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>nI <span class="ot">&lt;-</span> T <span class="sc">+</span> <span class="dv">1</span>L  <span class="co"># Infected population at each time</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>nU <span class="ot">&lt;-</span> T <span class="sc">+</span> <span class="dv">1</span>L  <span class="co"># Control variable at each time</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>n  <span class="ot">&lt;-</span> nI <span class="sc">+</span> nU <span class="co"># Total number of decision variables</span></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Functions for indexing variables in the decision vector</span></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>idxI <span class="ot">&lt;-</span> <span class="cf">function</span>(t) t                 <span class="co"># I_t at position t (1..T+1)</span></span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>idxU <span class="ot">&lt;-</span> <span class="cf">function</span>(t) nI <span class="sc">+</span> t            <span class="co"># υ_t at position nI+t (1..T+1)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="jump-variable-declaration-and-bounds" class="level3">
+<h3 class="anchored" data-anchor-id="jump-variable-declaration-and-bounds">JuMP : Variable declaration and bounds</h3>
+<div class="sourceCode" id="cb13"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="pp">@variable</span>(model, <span class="fl">0</span> <span class="op">&lt;=</span> I[<span class="fl">1</span><span class="op">:</span>(T<span class="op">+</span><span class="fl">1</span>)] <span class="op">&lt;=</span> <span class="fl">1</span>)      <span class="co"># State variables with bounds</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="pp">@variable</span>(model, <span class="fl">0</span> <span class="op">&lt;=</span> υ[<span class="fl">1</span><span class="op">:</span>(T<span class="op">+</span><span class="fl">1</span>)] <span class="op">&lt;=</span> υ_max) <span class="co"># Control variables with bounds</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+</section>
+<section id="r-vs-jump-objective-function" class="level2">
+<h2 class="anchored" data-anchor-id="r-vs-jump-objective-function">R vs JuMP: Objective function</h2>
+<section id="r-approach" class="level3">
+<h3 class="anchored" data-anchor-id="r-approach">R Approach</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>eval_f <span class="ot">&lt;-</span> <span class="cf">function</span>(x) {</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  I  <span class="ot">&lt;-</span> x[<span class="dv">1</span><span class="sc">:</span>nI]      <span class="co"># Infected population</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>  υ  <span class="ot">&lt;-</span> x[(nI<span class="sc">+</span><span class="dv">1</span>)<span class="sc">:</span>n]  <span class="co"># Control variable</span></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">sum</span>( dt <span class="sc">*</span> (A<span class="sc">*</span>I <span class="sc">+</span> B<span class="sc">*</span>υ<span class="sc">^</span><span class="dv">2</span>) )  <span class="co"># Total cost</span></span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>eval_grad_f <span class="ot">&lt;-</span> <span class="cf">function</span>(x) {</span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>  g <span class="ot">&lt;-</span> <span class="fu">numeric</span>(n)</span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>  <span class="co"># I_t: Δt × A</span></span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>  g[<span class="dv">1</span><span class="sc">:</span>nI] <span class="ot">&lt;-</span> dt <span class="sc">*</span> A</span>
+<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>  <span class="co"># υ_t: Δt × 2B × υ_t</span></span>
+<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a>  g[(nI<span class="sc">+</span><span class="dv">1</span>)<span class="sc">:</span>n] <span class="ot">&lt;-</span> dt <span class="sc">*</span> <span class="dv">2</span><span class="sc">*</span>B <span class="sc">*</span> x[(nI<span class="sc">+</span><span class="dv">1</span>)<span class="sc">:</span>n]</span>
+<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>  g</span>
+<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="jump-approach" class="level3">
+<h3 class="anchored" data-anchor-id="jump-approach">JuMP Approach</h3>
+<div class="sourceCode" id="cb15"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="pp">@objective</span>(model, Min, <span class="fu">sum</span>(dt <span class="op">*</span> (A <span class="op">*</span> I[t] <span class="op">+</span> B <span class="op">*</span> υ[t]<span class="op">^</span><span class="fl">2</span>) <span class="cf">for</span> t <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span>T<span class="op">+</span><span class="fl">1</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+</section>
+<section id="r-vs-jump-constraints" class="level2">
+<h2 class="anchored" data-anchor-id="r-vs-jump-constraints">R vs JuMP: Constraints</h2>
+<p>This section shows the fundamental difference in how R and JuMP handle constraint specification - the core challenge that makes R optimisation more difficult.</p>
+<p>The epidemiological dynamics are governed by: <span class="math display">\[\frac{dI}{dt} = (\beta(1-\upsilon(t))N - \gamma) \cdot I(t)\]</span></p>
+<p>Discretised using Euler’s method: <span class="math display">\[I_{t+1} = I_t + \Delta t \cdot \left((1-\upsilon_t)\beta N - \gamma\right) \cdot I_t\]</span></p>
+<section id="r-approach-1" class="level3">
+<h3 class="anchored" data-anchor-id="r-approach-1">R Approach</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Row 1: I1 - I0 = 0 (initial condition)</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Rows 2..(T+1): I_{t+1} - I_t - dt * ( (1 - υ_t)*beta*N*I_t - gamma*I_t ) = 0</span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>m <span class="ot">&lt;-</span> T <span class="sc">+</span> <span class="dv">1</span>L  <span class="co"># Total number of equality constraints</span></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>eval_g <span class="ot">&lt;-</span> <span class="cf">function</span>(x) {</span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>  I  <span class="ot">&lt;-</span> x[<span class="dv">1</span><span class="sc">:</span>nI]      <span class="co"># Extract state variables</span></span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>  υ  <span class="ot">&lt;-</span> x[(nI<span class="sc">+</span><span class="dv">1</span>)<span class="sc">:</span>n]  <span class="co"># Extract control variables</span></span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>  g <span class="ot">&lt;-</span> <span class="fu">numeric</span>(m)    <span class="co"># Constraint residuals </span></span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Initial condition: I₁ = I₀</span></span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a>  g[<span class="dv">1</span>] <span class="ot">&lt;-</span> I[<span class="dv">1</span>] <span class="sc">-</span> I0</span>
+<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Dynamics:</span></span>
+<span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (t <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>T) {</span>
+<span id="cb16-15"><a href="#cb16-15" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Growth rate: (1-υ_t)βN - γ</span></span>
+<span id="cb16-16"><a href="#cb16-16" aria-hidden="true" tabindex="-1"></a>    growth <span class="ot">&lt;-</span> ((<span class="dv">1</span> <span class="sc">-</span> υ[t]) <span class="sc">*</span> beta <span class="sc">*</span> N <span class="sc">-</span> gamma) <span class="sc">*</span> I[t]</span>
+<span id="cb16-17"><a href="#cb16-17" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Euler step: I_{t+1} = I_t + Δt × growth_rate × I_t</span></span>
+<span id="cb16-18"><a href="#cb16-18" aria-hidden="true" tabindex="-1"></a>    g[t<span class="sc">+</span><span class="dv">1</span>] <span class="ot">&lt;-</span> I[t<span class="sc">+</span><span class="dv">1</span>] <span class="sc">-</span> I[t] <span class="sc">-</span> dt <span class="sc">*</span> growth</span>
+<span id="cb16-19"><a href="#cb16-19" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb16-20"><a href="#cb16-20" aria-hidden="true" tabindex="-1"></a>  g</span>
+<span id="cb16-21"><a href="#cb16-21" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="jump-approach-1" class="level3">
+<h3 class="anchored" data-anchor-id="jump-approach-1">JuMP Approach</h3>
+<div class="sourceCode" id="cb17"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="pp">@constraints</span>(model, <span class="cf">begin</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>    I[<span class="fl">1</span>] <span class="op">==</span> I0                                    <span class="co"># Initial condition</span></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>    [t <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span>T], I[t<span class="op">+</span><span class="fl">1</span>] <span class="op">==</span> I[t] <span class="op">+</span> dt <span class="op">*</span> ((<span class="fl">1</span> <span class="op">-</span> υ[t]) <span class="op">*</span> beta <span class="op">*</span> N <span class="op">-</span> gamma) <span class="op">*</span> I[t]  <span class="co"># Dynamics</span></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a><span class="cf">end</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+</section>
+<section id="r-vs-jump-jacobian" class="level2">
+<h2 class="anchored" data-anchor-id="r-vs-jump-jacobian">R vs JuMP: Jacobian</h2>
+<p>The Jacobian matrix <code>∇g(x)</code> contains partial derivatives of constraints with respect to variables:</p>
+<section id="r-approach-2" class="level3">
+<h3 class="anchored" data-anchor-id="r-approach-2">R Approach</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Defines which variables each constraint depends on</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>eval_jac_g_structure <span class="ot">&lt;-</span> {</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>  rows <span class="ot">&lt;-</span> <span class="fu">vector</span>(<span class="st">"list"</span>, m)</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>  rows[[<span class="dv">1</span>]] <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">idxI</span>(<span class="dv">1</span>))  <span class="co"># Initial condition depends only on I₁</span></span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (t <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>T) {</span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Dynamics constraint depends on I_t, I_{t+1}, υ_t</span></span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>    rows[[t<span class="sc">+</span><span class="dv">1</span>]] <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">idxI</span>(t), <span class="fu">idxI</span>(t<span class="sc">+</span><span class="dv">1</span>), <span class="fu">idxU</span>(t))</span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>  rows</span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Jacobian values</span></span>
+<span id="cb18-13"><a href="#cb18-13" aria-hidden="true" tabindex="-1"></a>eval_jac_g <span class="ot">&lt;-</span> <span class="cf">function</span>(x) {</span>
+<span id="cb18-14"><a href="#cb18-14" aria-hidden="true" tabindex="-1"></a>  I  <span class="ot">&lt;-</span> x[<span class="dv">1</span><span class="sc">:</span>nI]      <span class="co"># Extract state variables</span></span>
+<span id="cb18-15"><a href="#cb18-15" aria-hidden="true" tabindex="-1"></a>  υ  <span class="ot">&lt;-</span> x[(nI<span class="sc">+</span><span class="dv">1</span>)<span class="sc">:</span>n]  <span class="co"># Extract control variables</span></span>
+<span id="cb18-16"><a href="#cb18-16" aria-hidden="true" tabindex="-1"></a>  vals <span class="ot">&lt;-</span> <span class="fu">numeric</span>(<span class="dv">1</span> <span class="sc">+</span> <span class="dv">3</span><span class="sc">*</span>T)  <span class="co"># Total number of non-zero Jacobian entries</span></span>
+<span id="cb18-17"><a href="#cb18-17" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb18-18"><a href="#cb18-18" aria-hidden="true" tabindex="-1"></a>  k <span class="ot">&lt;-</span> <span class="dv">1</span>L</span>
+<span id="cb18-19"><a href="#cb18-19" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Row 1 (initial condition): ∂g₁/∂I₁ = 1</span></span>
+<span id="cb18-20"><a href="#cb18-20" aria-hidden="true" tabindex="-1"></a>  vals[k] <span class="ot">&lt;-</span> <span class="fl">1.0</span>; k <span class="ot">&lt;-</span> k <span class="sc">+</span> <span class="dv">1</span>L</span>
+<span id="cb18-21"><a href="#cb18-21" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb18-22"><a href="#cb18-22" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Rows t+1 (dynamics):</span></span>
+<span id="cb18-23"><a href="#cb18-23" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (t <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>T) {</span>
+<span id="cb18-24"><a href="#cb18-24" aria-hidden="true" tabindex="-1"></a>    dIdp1 <span class="ot">&lt;-</span> <span class="fl">1.0</span>                                            <span class="co"># ∂g_{t+1}/∂I_{t+1}</span></span>
+<span id="cb18-25"><a href="#cb18-25" aria-hidden="true" tabindex="-1"></a>    dIdt  <span class="ot">&lt;-</span> <span class="sc">-</span><span class="fl">1.0</span> <span class="sc">-</span> dt <span class="sc">*</span> ( (<span class="dv">1</span> <span class="sc">-</span> υ[t]) <span class="sc">*</span> beta <span class="sc">*</span> N <span class="sc">-</span> gamma )  <span class="co"># ∂g_{t+1}/∂I_t</span></span>
+<span id="cb18-26"><a href="#cb18-26" aria-hidden="true" tabindex="-1"></a>    dυdt  <span class="ot">&lt;-</span>  dt <span class="sc">*</span> beta <span class="sc">*</span> N <span class="sc">*</span> I[t]                          <span class="co"># ∂g_{t+1}/∂υ_t</span></span>
+<span id="cb18-27"><a href="#cb18-27" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb18-28"><a href="#cb18-28" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Order must match eval_jac_g_structure for the same row</span></span>
+<span id="cb18-29"><a href="#cb18-29" aria-hidden="true" tabindex="-1"></a>    vals[k]   <span class="ot">&lt;-</span> dIdt;   k <span class="ot">&lt;-</span> k <span class="sc">+</span> <span class="dv">1</span>L</span>
+<span id="cb18-30"><a href="#cb18-30" aria-hidden="true" tabindex="-1"></a>    vals[k]   <span class="ot">&lt;-</span> dIdp1;  k <span class="ot">&lt;-</span> k <span class="sc">+</span> <span class="dv">1</span>L</span>
+<span id="cb18-31"><a href="#cb18-31" aria-hidden="true" tabindex="-1"></a>    vals[k]   <span class="ot">&lt;-</span> dυdt;   k <span class="ot">&lt;-</span> k <span class="sc">+</span> <span class="dv">1</span>L</span>
+<span id="cb18-32"><a href="#cb18-32" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb18-33"><a href="#cb18-33" aria-hidden="true" tabindex="-1"></a>  vals</span>
+<span id="cb18-34"><a href="#cb18-34" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="jump-approach-2" class="level3">
+<h3 class="anchored" data-anchor-id="jump-approach-2">JuMP Approach</h3>
+<p>JuMP automatically computes and handles Jacobians, no manual Jacobian computation is needed. The solver receives the constraint expressions and computes derivatives automatically.</p>
+</section>
+</section>
+<section id="r-vs-jump-bounds-and-initialisation" class="level2">
+<h2 class="anchored" data-anchor-id="r-vs-jump-bounds-and-initialisation">R vs JuMP: Bounds and initialisation</h2>
+<section id="r-approach-3" class="level3">
+<h3 class="anchored" data-anchor-id="r-approach-3">R Approach</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># State variables: 0 &lt;= I_t &lt;= 1 (infection level as fraction of population)</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Control variables: 0 &lt;= υ_t &lt;= υ_max (intervention intensity)</span></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>lb <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">rep</span>(<span class="dv">0</span>, nI),      <span class="fu">rep</span>(<span class="dv">0</span>, nU))      <span class="co"># Lower bounds</span></span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>ub <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">rep</span>(<span class="dv">1</span>, nI),      <span class="fu">rep</span>(υ_max, nU))  <span class="co"># Upper bounds</span></span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Constraints: all equalities -&gt; 0 == g_i(x)</span></span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a><span class="co"># All constraints must be satisfied exactly (no tolerance)</span></span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>constraint_lb <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">0</span>, m)  <span class="co"># Lower bound for constraint residuals</span></span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>constraint_ub <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">0</span>, m)  <span class="co"># Upper bound for constraint residuals</span></span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Initial guess: "do nothing" baseline policy</span></span>
+<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a>x0 <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">rep</span>(I0, nI), <span class="fu">rep</span>(<span class="dv">0</span>, nU))  <span class="co"># [I₀, I₀, ..., I₀, 0, 0, ..., 0]</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="jump-approach-3" class="level3">
+<h3 class="anchored" data-anchor-id="jump-approach-3">JuMP Approach</h3>
+<div class="sourceCode" id="cb20"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="pp">@variable</span>(model, <span class="fl">0</span> <span class="op">&lt;=</span> I[<span class="fl">1</span><span class="op">:</span>(T<span class="op">+</span><span class="fl">1</span>)] <span class="op">&lt;=</span> <span class="fl">1</span>)      <span class="co"># State variables with bounds</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="pp">@variable</span>(model, <span class="fl">0</span> <span class="op">&lt;=</span> υ[<span class="fl">1</span><span class="op">:</span>(T<span class="op">+</span><span class="fl">1</span>)] <span class="op">&lt;=</span> υ_max) <span class="co"># Control variables with bounds</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+</section>
+<section id="r-vs-jump-solver-configuration-and-execution" class="level2">
+<h2 class="anchored" data-anchor-id="r-vs-jump-solver-configuration-and-execution">R vs JuMP: Solver configuration and execution</h2>
+<p>This section compares how R and JuMP handle solver configuration and execution.</p>
+<section id="r-approach-4" class="level3">
+<h3 class="anchored" data-anchor-id="r-approach-4">R Approach</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Configure IPOPT solver options</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>opts <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">print_level =</span> <span class="dv">3</span>,                          <span class="co"># Output to monitor progress</span></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">max_iter =</span> <span class="dv">1000</span>,                          <span class="co"># Maximum number of iterations</span></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">hessian_approximation =</span> <span class="st">"limited-memory"</span>  <span class="co"># Use L-BFGS approximation</span></span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Solve the optimisation problem</span></span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>res <span class="ot">&lt;-</span> <span class="fu">ipoptr</span>(</span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">x0 =</span> x0,                           <span class="co"># Initial guess</span></span>
+<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">eval_f =</span> eval_f,                   <span class="co"># Objective function</span></span>
+<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">eval_grad_f =</span> eval_grad_f,         <span class="co"># Objective gradient</span></span>
+<span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">lb =</span> lb, <span class="at">ub =</span> ub,                  <span class="co"># Variable bounds</span></span>
+<span id="cb21-14"><a href="#cb21-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">eval_g =</span> eval_g,                   <span class="co"># Constraint functions</span></span>
+<span id="cb21-15"><a href="#cb21-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">eval_jac_g =</span> eval_jac_g,           <span class="co"># Constraint Jacobian</span></span>
+<span id="cb21-16"><a href="#cb21-16" aria-hidden="true" tabindex="-1"></a>  <span class="at">eval_jac_g_structure =</span> eval_jac_g_structure,  <span class="co"># Jacobian sparsity pattern</span></span>
+<span id="cb21-17"><a href="#cb21-17" aria-hidden="true" tabindex="-1"></a>  <span class="at">constraint_lb =</span> constraint_lb,     <span class="co"># Constraint lower bounds</span></span>
+<span id="cb21-18"><a href="#cb21-18" aria-hidden="true" tabindex="-1"></a>  <span class="at">constraint_ub =</span> constraint_ub,     <span class="co"># Constraint upper bounds</span></span>
+<span id="cb21-19"><a href="#cb21-19" aria-hidden="true" tabindex="-1"></a>  <span class="at">opts =</span> opts                        <span class="co"># Solver options</span></span>
+<span id="cb21-20"><a href="#cb21-20" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+******************************************************************************
+This program contains Ipopt, a library for large-scale nonlinear optimization.
+ Ipopt is released as open source code under the Eclipse Public License (EPL).
+         For more information visit https://github.com/coin-or/Ipopt
+******************************************************************************
+
+Total number of variables............................:     2002
+                     variables with only lower bounds:        0
+                variables with lower and upper bounds:     2002
+                     variables with only upper bounds:        0
+Total number of equality constraints.................:     1001
+Total number of inequality constraints...............:        0
+        inequality constraints with only lower bounds:        0
+   inequality constraints with lower and upper bounds:        0
+        inequality constraints with only upper bounds:        0
+
+
+Number of Iterations....: 41
+
+                                   (scaled)                 (unscaled)
+Objective...............:   3.6984923655207211e+01    3.6984923655207211e+01
+Dual infeasibility......:   1.6092974654569493e-10    1.6092974654569493e-10
+Constraint violation....:   6.6664881080702454e-17    6.6664881080702454e-17
+Variable bound violation:   9.9939457820497068e-09    9.9939457820497068e-09
+Complementarity.........:   1.0363937798783481e-11    1.0363937798783481e-11
+Overall NLP error.......:   1.6092974654569493e-10    1.6092974654569493e-10
+
+
+Number of objective function evaluations             = 42
+Number of objective gradient evaluations             = 42
+Number of equality constraint evaluations            = 42
+Number of inequality constraint evaluations          = 0
+Number of equality constraint Jacobian evaluations   = 42
+Number of inequality constraint Jacobian evaluations = 0
+Number of Lagrangian Hessian evaluations             = 0
+Total seconds in IPOPT                               = 0.120
+
+EXIT: Optimal Solution Found.</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Display results</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"</span><span class="sc">\n</span><span class="st">Status:"</span>, res<span class="sc">$</span>status, <span class="st">"</span><span class="sc">\n</span><span class="st">Objective:"</span>, res<span class="sc">$</span>objective, <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Status: 0 
+Objective: 36.98492 </code></pre>
+</div>
+</div>
+</section>
+<section id="jump-approach-4" class="level3">
+<h3 class="anchored" data-anchor-id="jump-approach-4">JuMP Approach</h3>
+<div class="sourceCode" id="cb25"><pre class="sourceCode julia code-with-copy"><code class="sourceCode julia"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> <span class="fu">Model</span>(Ipopt.Optimizer)</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a><span class="fu">set_optimizer_attribute</span>(model, <span class="st">"print_level"</span>, <span class="fl">3</span>)                    <span class="co"># Output to monitor progress</span></span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a><span class="fu">set_optimizer_attribute</span>(model, <span class="st">"max_iter"</span>, <span class="fl">1000</span>)                   <span class="co"># Maximum number of iterations</span></span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a><span class="fu">set_optimizer_attribute</span>(model, <span class="st">"hessian_approximation"</span>, <span class="st">"limited-memory"</span>)  <span class="co"># Use L-BFGS approximation</span></span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a><span class="co"># ... variable and constraint declarations ...</span></span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a><span class="fu">optimize!</span>(model)  <span class="co"># That's it!</span></span>
+<span id="cb25-9"><a href="#cb25-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-10"><a href="#cb25-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Access to results</span></span>
+<span id="cb25-11"><a href="#cb25-11" aria-hidden="true" tabindex="-1"></a><span class="fu">objective_value</span>(model)</span>
+<span id="cb25-12"><a href="#cb25-12" aria-hidden="true" tabindex="-1"></a><span class="fu">value</span>.(I)  <span class="co"># Optimal I trajectory</span></span>
+<span id="cb25-13"><a href="#cb25-13" aria-hidden="true" tabindex="-1"></a><span class="fu">value</span>.(υ)  <span class="co"># Optimal υ trajectory</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
+</section>
+<section id="results" class="level2">
+<h2 class="anchored" data-anchor-id="results">Results</h2>
+<section id="r-approach-5" class="level3">
+<h3 class="anchored" data-anchor-id="r-approach-5">R Approach</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract solution vectors from the optimisation result</span></span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>solI  <span class="ot">&lt;-</span> res<span class="sc">$</span>solution[<span class="dv">1</span><span class="sc">:</span>nI]      <span class="co"># Optimal I trajectory</span></span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>solU  <span class="ot">&lt;-</span> res<span class="sc">$</span>solution[(nI<span class="sc">+</span><span class="dv">1</span>)<span class="sc">:</span>n]  <span class="co"># Optimal υ trajectory</span></span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (<span class="fu">require</span>(graphics, <span class="at">quietly =</span> <span class="cn">TRUE</span>)) {</span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a>  I_optimal <span class="ot">&lt;-</span> solI</span>
+<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a>  υ_optimal <span class="ot">&lt;-</span> solU</span>
+<span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a>  ts <span class="ot">&lt;-</span> <span class="fu">seq</span>(t0, tf, <span class="at">by =</span> dt)  <span class="co"># time grid (T+1 points)</span></span>
+<span id="cb26-9"><a href="#cb26-9" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb26-10"><a href="#cb26-10" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Configure plotting window </span></span>
+<span id="cb26-11"><a href="#cb26-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">par</span>(<span class="at">mfrow =</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">1</span>), <span class="at">mar =</span> <span class="fu">c</span>(<span class="dv">5</span>, <span class="dv">5</span>, <span class="dv">3</span>, <span class="dv">2</span>))</span>
+<span id="cb26-12"><a href="#cb26-12" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb26-13"><a href="#cb26-13" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Plot 1: Optimal infection</span></span>
+<span id="cb26-14"><a href="#cb26-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">plot</span>(ts, I_optimal,</span>
+<span id="cb26-15"><a href="#cb26-15" aria-hidden="true" tabindex="-1"></a>       <span class="at">type =</span> <span class="st">"l"</span>, <span class="at">lwd =</span> <span class="dv">2</span>, <span class="at">col =</span> <span class="st">"red"</span>,</span>
+<span id="cb26-16"><a href="#cb26-16" aria-hidden="true" tabindex="-1"></a>       <span class="at">main =</span> <span class="st">"Optimal  I"</span>,</span>
+<span id="cb26-17"><a href="#cb26-17" aria-hidden="true" tabindex="-1"></a>       <span class="at">xlab =</span> <span class="st">"Time (days)"</span>, <span class="at">ylab =</span> <span class="st">"Infected population (I)"</span>,</span>
+<span id="cb26-18"><a href="#cb26-18" aria-hidden="true" tabindex="-1"></a>       <span class="at">cex.lab =</span> <span class="fl">1.2</span>, <span class="at">cex.axis =</span> <span class="fl">1.0</span>, <span class="at">cex.main =</span> <span class="fl">1.2</span>)</span>
+<span id="cb26-19"><a href="#cb26-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">grid</span>()</span>
+<span id="cb26-20"><a href="#cb26-20" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb26-21"><a href="#cb26-21" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Plot 2: Optimal control</span></span>
+<span id="cb26-22"><a href="#cb26-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">plot</span>(ts, υ_optimal,</span>
+<span id="cb26-23"><a href="#cb26-23" aria-hidden="true" tabindex="-1"></a>       <span class="at">type =</span> <span class="st">"l"</span>, <span class="at">lwd =</span> <span class="dv">2</span>, <span class="at">col =</span> <span class="st">"blue"</span>,</span>
+<span id="cb26-24"><a href="#cb26-24" aria-hidden="true" tabindex="-1"></a>       <span class="at">main =</span> <span class="st">"Optimal control"</span>,</span>
+<span id="cb26-25"><a href="#cb26-25" aria-hidden="true" tabindex="-1"></a>       <span class="at">xlab =</span> <span class="st">"Time (days)"</span>, <span class="at">ylab =</span> <span class="st">"Control value (υ)"</span>,</span>
+<span id="cb26-26"><a href="#cb26-26" aria-hidden="true" tabindex="-1"></a>       <span class="at">cex.lab =</span> <span class="fl">1.2</span>, <span class="at">cex.axis =</span> <span class="fl">1.0</span>, <span class="at">cex.main =</span> <span class="fl">1.2</span>,</span>
+<span id="cb26-27"><a href="#cb26-27" aria-hidden="true" tabindex="-1"></a>       <span class="at">ylim =</span> <span class="fu">c</span>(<span class="dv">0</span>, υ_max))</span>
+<span id="cb26-28"><a href="#cb26-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">grid</span>()</span>
+<span id="cb26-29"><a href="#cb26-29" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="expSIR_in_R_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="conclusion" class="level2">
+<h2 class="anchored" data-anchor-id="conclusion">Conclusion</h2>
+<p>This toy model has:</p>
+<ul>
+<li><em>1001 constraints</em> (one per time step + initial condition)</li>
+<li><em>2002 variables</em> (state + control variables)</li>
+<li><em>3003 non-zero Jacobian entries</em> (sparse structure)</li>
+</ul>
+<p>For large-scale problems, this computational difference becomes critically important as R requires manual computation of all derivatives, which is computationally inefficient compared to JuMP’s automatic differentiation. Manual derivative computation in R scales poorly with problem size, requiring O(n²) operations for each constraint and variable interaction, while JuMP’s automatic differentiation leverages optimised algorithms that scale much more efficiently. This efficiency gap becomes increasingly significant as problem complexity grows, making JuMP’s approach not just more convenient but fundamentally more scalable for real-world epidemiological models with thousands of variables and constraints.</p>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
