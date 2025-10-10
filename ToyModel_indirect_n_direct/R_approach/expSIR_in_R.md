@@ -407,11 +407,6 @@ res <- ipoptr(
 
     EXIT: Optimal Solution Found.
 
-``` r
-# Display results
-cat("\nStatus:", res$status, "\nObjective:", res$objective, "\n")
-```
-
 
     Status: 0 
     Objective: 36.98492 
@@ -438,44 +433,11 @@ value.(υ)  # Optimal υ trajectory
 
 ### R Approach
 
-``` r
-# Extract solution vectors from the optimisation result
-solI  <- res$solution[1:nI]      # Optimal I trajectory
-solU  <- res$solution[(nI+1):n]  # Optimal υ trajectory
-
-if (require(graphics, quietly = TRUE)) {
-  I_optimal <- solI
-  υ_optimal <- solU
-  ts <- seq(t0, tf, by = dt)  # time grid (T+1 points)
-  
-  # Configure plotting window 
-  par(mfrow = c(2, 1), mar = c(5, 5, 3, 2))
-  
-  # Plot 1: Optimal infection
-  plot(ts, I_optimal,
-       type = "l", lwd = 2, col = "red",
-       main = "Optimal  I",
-       xlab = "Time (days)", ylab = "Infected population (I)",
-       cex.lab = 1.2, cex.axis = 1.0, cex.main = 1.2,
-       ylim = c(0.01, 0.1))
-  grid()
-  
-  # Plot 2: Optimal control
-  plot(ts, υ_optimal,
-       type = "l", lwd = 2, col = "blue",
-       main = "Optimal control",
-       xlab = "Time (days)", ylab = "Control value (υ)",
-       cex.lab = 1.2, cex.axis = 1.0, cex.main = 1.2,
-       ylim = c(0, υ_max))
-  grid()
-}
-```
-
-![](expSIR_in_R_files/figure-commonmark/unnamed-chunk-8-1.png)
+![](expSIR_in_R_files/figure-commonmark/unnamed-chunk-9-1.png)
 
 ## Discussion
 
-This toy model has:
+This model has:
 
 - *1001 constraints* (one per time step + initial condition)
 - *2002 variables* (state + control variables)

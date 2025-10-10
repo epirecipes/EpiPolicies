@@ -122,6 +122,8 @@ library(ipoptr)
 ## Parameters
 
 ```{r}
+#| echo: true
+#| output: false
 library(ipoptr)
 
 beta  <- 0.5
@@ -147,6 +149,8 @@ This section shows how R handles variable declaration compared to JuMP's approac
 In R, we must manually organise all decision variables into a single vector (`x`), provide indexing functions (`idxI` and `idxU`), and handle bounds separately from variable declaration.
 
 ```{r}
+#| echo: true
+#| output: false
 # Decision vector x = [ I[1:(T+1)], υ[1:(T+1)] ]  (length n = 2*(T+1))
 nI <- T + 1L  # Infected population at each time
 nU <- T + 1L  # Control variable at each time
@@ -168,6 +172,8 @@ idxU <- function(t) nI + t            # υ_t at position nI+t (1..T+1)
 
 ### R Approach
 ```{r}
+#| echo: true
+#| output: false
 eval_f <- function(x) {
   I  <- x[1:nI]      # Infected population
   υ  <- x[(nI+1):n]  # Control variable
@@ -202,6 +208,8 @@ $$I_{t+1} = I_t + \Delta t \cdot \left((1-\upsilon_t)\beta N - \gamma\right) \cd
 
 ### R Approach
 ```{r}
+#| echo: true
+#| output: false
 # Row 1: I1 - I0 = 0 (initial condition)
 # Rows 2..(T+1): I_{t+1} - I_t - dt * ( (1 - υ_t)*beta*N*I_t - gamma*I_t ) = 0
 m <- T + 1L  # Total number of equality constraints
@@ -241,6 +249,8 @@ The Jacobian matrix `∇g(x)` contains partial derivatives of constraints with r
 ### R Approach
 
 ```{r}
+#| echo: true
+#| output: false
 # Defines which variables each constraint depends on
 eval_jac_g_structure <- {
   rows <- vector("list", m)
@@ -286,6 +296,8 @@ JuMP automatically computes and handles Jacobians, no manual Jacobian computatio
 ### R Approach
 
 ```{r}
+#| echo: true
+#| output: false
 # State variables: 0 <= I_t <= 1 (infection level as fraction of population)
 # Control variables: 0 <= υ_t <= υ_max (intervention intensity)
 lb <- c(rep(0, nI),      rep(0, nU))      # Lower bounds
@@ -314,6 +326,8 @@ This section compares how R and JuMP handle solver configuration and execution.
 ### R Approach
 
 ```{r}
+#| echo: true
+#| output: true
 # Configure IPOPT solver options
 opts <- list(
   print_level = 3,                          # Output to monitor progress
@@ -334,7 +348,11 @@ res <- ipoptr(
   constraint_ub = constraint_ub,     # Constraint upper bounds
   opts = opts                        # Solver options
 )
+```
 
+```{r}
+#| echo: false
+#| output: true
 # Display results
 cat("\nStatus:", res$status, "\nObjective:", res$objective, "\n")
 ```
@@ -362,6 +380,8 @@ value.(υ)  # Optimal υ trajectory
 ### R Approach
 
 ```{r}
+#| echo: false
+#| output: true
 #| fig-width: 7
 #| fig-height: 7
 #| fig-dpi: 300
@@ -399,7 +419,7 @@ if (require(graphics, quietly = TRUE)) {
 
 ## Discussion
 
-This toy model has:
+This model has:
 
 - _1001 constraints_ (one per time step + initial condition)
 - _2002 variables_ (state + control variables)
