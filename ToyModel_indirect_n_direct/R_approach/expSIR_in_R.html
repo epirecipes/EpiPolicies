@@ -106,7 +106,7 @@ window.Quarto = {
 
 <div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
 <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-<div class="quarto-alternate-formats"><h2>Other Formats</h2><ul><li><a href="expSIR_in_R.pdf"><i class="bi bi-file-pdf"></i>PDF</a></li><li><a href="expSIR_in_R.docx"><i class="bi bi-file-word"></i>MS Word</a></li><li><a href="expSIR_in_R.md"><i class="bi bi-file-code"></i>Github (GFM)</a></li></ul></div></div>
+<div class="quarto-alternate-formats"><h2>Other Formats</h2><ul><li><a href="../../expSIR_in_R.pdf"><i class="bi bi-file-pdf"></i>PDF</a></li><li><a href="expSIR_in_R.docx"><i class="bi bi-file-word"></i>MS Word</a></li><li><a href="expSIR_in_R.md"><i class="bi bi-file-code"></i>Github (GFM)</a></li></ul></div></div>
 <main class="content" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
@@ -457,7 +457,7 @@ Number of inequality constraint evaluations          = 0
 Number of equality constraint Jacobian evaluations   = 42
 Number of inequality constraint Jacobian evaluations = 0
 Number of Lagrangian Hessian evaluations             = 0
-Total seconds in IPOPT                               = 0.120
+Total seconds in IPOPT                               = 0.121
 
 EXIT: Optimal Solution Found.</code></pre>
 </div>
@@ -509,37 +509,38 @@ Objective: 36.98492 </code></pre>
 <span id="cb26-15"><a href="#cb26-15" aria-hidden="true" tabindex="-1"></a>       <span class="at">type =</span> <span class="st">"l"</span>, <span class="at">lwd =</span> <span class="dv">2</span>, <span class="at">col =</span> <span class="st">"red"</span>,</span>
 <span id="cb26-16"><a href="#cb26-16" aria-hidden="true" tabindex="-1"></a>       <span class="at">main =</span> <span class="st">"Optimal  I"</span>,</span>
 <span id="cb26-17"><a href="#cb26-17" aria-hidden="true" tabindex="-1"></a>       <span class="at">xlab =</span> <span class="st">"Time (days)"</span>, <span class="at">ylab =</span> <span class="st">"Infected population (I)"</span>,</span>
-<span id="cb26-18"><a href="#cb26-18" aria-hidden="true" tabindex="-1"></a>       <span class="at">cex.lab =</span> <span class="fl">1.2</span>, <span class="at">cex.axis =</span> <span class="fl">1.0</span>, <span class="at">cex.main =</span> <span class="fl">1.2</span>)</span>
-<span id="cb26-19"><a href="#cb26-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">grid</span>()</span>
-<span id="cb26-20"><a href="#cb26-20" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb26-21"><a href="#cb26-21" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Plot 2: Optimal control</span></span>
-<span id="cb26-22"><a href="#cb26-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">plot</span>(ts, υ_optimal,</span>
-<span id="cb26-23"><a href="#cb26-23" aria-hidden="true" tabindex="-1"></a>       <span class="at">type =</span> <span class="st">"l"</span>, <span class="at">lwd =</span> <span class="dv">2</span>, <span class="at">col =</span> <span class="st">"blue"</span>,</span>
-<span id="cb26-24"><a href="#cb26-24" aria-hidden="true" tabindex="-1"></a>       <span class="at">main =</span> <span class="st">"Optimal control"</span>,</span>
-<span id="cb26-25"><a href="#cb26-25" aria-hidden="true" tabindex="-1"></a>       <span class="at">xlab =</span> <span class="st">"Time (days)"</span>, <span class="at">ylab =</span> <span class="st">"Control value (υ)"</span>,</span>
-<span id="cb26-26"><a href="#cb26-26" aria-hidden="true" tabindex="-1"></a>       <span class="at">cex.lab =</span> <span class="fl">1.2</span>, <span class="at">cex.axis =</span> <span class="fl">1.0</span>, <span class="at">cex.main =</span> <span class="fl">1.2</span>,</span>
-<span id="cb26-27"><a href="#cb26-27" aria-hidden="true" tabindex="-1"></a>       <span class="at">ylim =</span> <span class="fu">c</span>(<span class="dv">0</span>, υ_max))</span>
-<span id="cb26-28"><a href="#cb26-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">grid</span>()</span>
-<span id="cb26-29"><a href="#cb26-29" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb26-18"><a href="#cb26-18" aria-hidden="true" tabindex="-1"></a>       <span class="at">cex.lab =</span> <span class="fl">1.2</span>, <span class="at">cex.axis =</span> <span class="fl">1.0</span>, <span class="at">cex.main =</span> <span class="fl">1.2</span>,</span>
+<span id="cb26-19"><a href="#cb26-19" aria-hidden="true" tabindex="-1"></a>       <span class="at">ylim =</span> <span class="fu">c</span>(<span class="fl">0.01</span>, <span class="fl">0.1</span>))</span>
+<span id="cb26-20"><a href="#cb26-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">grid</span>()</span>
+<span id="cb26-21"><a href="#cb26-21" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb26-22"><a href="#cb26-22" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Plot 2: Optimal control</span></span>
+<span id="cb26-23"><a href="#cb26-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">plot</span>(ts, υ_optimal,</span>
+<span id="cb26-24"><a href="#cb26-24" aria-hidden="true" tabindex="-1"></a>       <span class="at">type =</span> <span class="st">"l"</span>, <span class="at">lwd =</span> <span class="dv">2</span>, <span class="at">col =</span> <span class="st">"blue"</span>,</span>
+<span id="cb26-25"><a href="#cb26-25" aria-hidden="true" tabindex="-1"></a>       <span class="at">main =</span> <span class="st">"Optimal control"</span>,</span>
+<span id="cb26-26"><a href="#cb26-26" aria-hidden="true" tabindex="-1"></a>       <span class="at">xlab =</span> <span class="st">"Time (days)"</span>, <span class="at">ylab =</span> <span class="st">"Control value (υ)"</span>,</span>
+<span id="cb26-27"><a href="#cb26-27" aria-hidden="true" tabindex="-1"></a>       <span class="at">cex.lab =</span> <span class="fl">1.2</span>, <span class="at">cex.axis =</span> <span class="fl">1.0</span>, <span class="at">cex.main =</span> <span class="fl">1.2</span>,</span>
+<span id="cb26-28"><a href="#cb26-28" aria-hidden="true" tabindex="-1"></a>       <span class="at">ylim =</span> <span class="fu">c</span>(<span class="dv">0</span>, υ_max))</span>
+<span id="cb26-29"><a href="#cb26-29" aria-hidden="true" tabindex="-1"></a>  <span class="fu">grid</span>()</span>
+<span id="cb26-30"><a href="#cb26-30" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="expSIR_in_R_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="expSIR_in_R_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid figure-img" width="2100"></p>
 </figure>
 </div>
 </div>
 </div>
 </section>
 </section>
-<section id="conclusion" class="level2">
-<h2 class="anchored" data-anchor-id="conclusion">Conclusion</h2>
+<section id="discussion" class="level2">
+<h2 class="anchored" data-anchor-id="discussion">Discussion</h2>
 <p>This toy model has:</p>
 <ul>
 <li><em>1001 constraints</em> (one per time step + initial condition)</li>
 <li><em>2002 variables</em> (state + control variables)</li>
-<li><em>3003 non-zero Jacobian entries</em> (sparse structure)</li>
+<li><em>3001 non-zero Jacobian entries</em> (sparse structure)</li>
 </ul>
-<p>For large-scale problems, this computational difference becomes critically important as R requires manual computation of all derivatives, which is computationally inefficient compared to JuMP’s automatic differentiation. Manual derivative computation in R scales poorly with problem size, requiring O(n²) operations for each constraint and variable interaction, while JuMP’s automatic differentiation leverages optimised algorithms that scale much more efficiently. This efficiency gap becomes increasingly significant as problem complexity grows, making JuMP’s approach not just more convenient but fundamentally more scalable for real-world epidemiological models with thousands of variables and constraints.</p>
+<p>For large-scale problems, this computational difference becomes more important as R requires manual computation of all derivatives, which is computationally inefficient compared to JuMP’s automatic differentiation. Manual derivative computation in R scales poorly with problem size, requiring O(n²) operations for each constraint and variable interaction, while JuMP’s automatic differentiation leverages optimised algorithms that scale much more efficiently. This efficiency gap becomes increasingly significant as problem complexity grows, making JuMP’s approach not just more convenient but more scalable for real-world epidemiological models with thousands of variables and constraints.</p>
 </section>
 
 </main>

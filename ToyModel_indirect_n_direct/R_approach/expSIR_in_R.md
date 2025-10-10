@@ -456,7 +456,8 @@ if (require(graphics, quietly = TRUE)) {
        type = "l", lwd = 2, col = "red",
        main = "Optimal  I",
        xlab = "Time (days)", ylab = "Infected population (I)",
-       cex.lab = 1.2, cex.axis = 1.0, cex.main = 1.2)
+       cex.lab = 1.2, cex.axis = 1.0, cex.main = 1.2,
+       ylim = c(0.01, 0.1))
   grid()
   
   # Plot 2: Optimal control
@@ -472,22 +473,22 @@ if (require(graphics, quietly = TRUE)) {
 
 ![](expSIR_in_R_files/figure-commonmark/unnamed-chunk-8-1.png)
 
-## Conclusion
+## Discussion
 
 This toy model has:
 
 - *1001 constraints* (one per time step + initial condition)
 - *2002 variables* (state + control variables)
-- *3003 non-zero Jacobian entries* (sparse structure)
+- *3001 non-zero Jacobian entries* (sparse structure)
 
-For large-scale problems, this computational difference becomes
-critically important as R requires manual computation of all
-derivatives, which is computationally inefficient compared to JuMP’s
-automatic differentiation. Manual derivative computation in R scales
-poorly with problem size, requiring O(n²) operations for each constraint
-and variable interaction, while JuMP’s automatic differentiation
-leverages optimised algorithms that scale much more efficiently. This
-efficiency gap becomes increasingly significant as problem complexity
-grows, making JuMP’s approach not just more convenient but fundamentally
-more scalable for real-world epidemiological models with thousands of
-variables and constraints.
+For large-scale problems, this computational difference becomes more
+important as R requires manual computation of all derivatives, which is
+computationally inefficient compared to JuMP’s automatic
+differentiation. Manual derivative computation in R scales poorly with
+problem size, requiring O(n²) operations for each constraint and
+variable interaction, while JuMP’s automatic differentiation leverages
+optimised algorithms that scale much more efficiently. This efficiency
+gap becomes increasingly significant as problem complexity grows, making
+JuMP’s approach not just more convenient but more scalable for
+real-world epidemiological models with thousands of variables and
+constraints.
