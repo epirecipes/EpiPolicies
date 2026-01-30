@@ -204,13 +204,13 @@ ipopt_bench = @benchmark ipopt_model = optimize_model(Ipopt.Optimizer, :Ipopt) s
     ******************************************************************************
 
     BenchmarkTools.Trial: 5 samples with 1 evaluation per sample.
-     Range (min … max):  1.351 s …   1.464 s  ┊ GC (min … max): 0.00% … 1.83%
-     Time  (median):     1.421 s              ┊ GC (median):    0.00%
-     Time  (mean ± σ):   1.405 s ± 48.104 ms  ┊ GC (mean ± σ):  0.62% ± 0.85%
+     Range (min … max):  1.344 s …   1.431 s  ┊ GC (min … max): 0.00% … 2.02%
+     Time  (median):     1.397 s              ┊ GC (median):    0.00%
+     Time  (mean ± σ):   1.395 s ± 32.168 ms  ┊ GC (mean ± σ):  0.66% ± 0.94%
 
-      █   █                              █  █                 █  
-      █▁▁▁█▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁█▁▁█▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁█ ▁
-      1.35 s         Histogram: frequency by time        1.46 s <
+      █                                ██        █            █  
+      █▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁██▁▁▁▁▁▁▁▁█▁▁▁▁▁▁▁▁▁▁▁▁█ ▁
+      1.34 s         Histogram: frequency by time        1.43 s <
 
      Memory estimate: 86.02 MiB, allocs estimate: 1547823.
 
@@ -232,15 +232,15 @@ madnlp_bench = @benchmark madnlp_model = optimize_model(MadNLP.Optimizer, :MadNL
 ```
 
     BenchmarkTools.Trial: 5 samples with 1 evaluation per sample.
-     Range (min … max):  1.368 s …    1.657 s  ┊ GC (min … max):  6.46% … 17.96%
-     Time  (median):     1.458 s               ┊ GC (median):     7.27%
-     Time  (mean ± σ):   1.497 s ± 111.043 ms  ┊ GC (mean ± σ):  11.75% ±  6.09%
+     Range (min … max):  1.349 s …    1.635 s  ┊ GC (min … max):  6.36% … 17.28%
+     Time  (median):     1.426 s               ┊ GC (median):     7.15%
+     Time  (mean ± σ):   1.484 s ± 138.208 ms  ┊ GC (mean ± σ):  11.58% ±  5.96%
 
-      █               █ █                 █                    █  
-      █▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁█▁█▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁█▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁█ ▁
-      1.37 s         Histogram: frequency by time         1.66 s <
+      █     █        █                                        ██  
+      █▁▁▁▁▁█▁▁▁▁▁▁▁▁█▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁██ ▁
+      1.35 s         Histogram: frequency by time         1.64 s <
 
-     Memory estimate: 7.82 GiB, allocs estimate: 1947816.
+     Memory estimate: 7.82 GiB, allocs estimate: 1947815.
 
 ``` julia
 madnlp_time = round(mean(madnlp_bench.times) / 1e9, digits=4)
@@ -260,13 +260,13 @@ uno_bench = @benchmark uno_model = optimize_model(() -> UnoSolver.Optimizer(pres
 ```
 
     BenchmarkTools.Trial: 5 samples with 1 evaluation per sample.
-     Range (min … max):  1.637 s …   1.747 s  ┊ GC (min … max): 0.00% … 1.85%
-     Time  (median):     1.688 s              ┊ GC (median):    0.00%
-     Time  (mean ± σ):   1.687 s ± 41.468 ms  ┊ GC (mean ± σ):  0.38% ± 0.83%
+     Range (min … max):  1.622 s …   1.730 s  ┊ GC (min … max): 0.00% … 1.85%
+     Time  (median):     1.668 s              ┊ GC (median):    0.00%
+     Time  (mean ± σ):   1.666 s ± 40.599 ms  ┊ GC (mean ± σ):  0.38% ± 0.83%
 
-      █            █            █    █                        █  
-      █▁▁▁▁▁▁▁▁▁▁▁▁█▁▁▁▁▁▁▁▁▁▁▁▁█▁▁▁▁█▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁█ ▁
-      1.64 s         Histogram: frequency by time        1.75 s <
+      ▁          ▁            █                               ▁  
+      █▁▁▁▁▁▁▁▁▁▁█▁▁▁▁▁▁▁▁▁▁▁▁█▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁█ ▁
+      1.62 s         Histogram: frequency by time        1.73 s <
 
      Memory estimate: 85.99 MiB, allocs estimate: 1537605.
 
@@ -309,9 +309,9 @@ SIR Model - Solver Comparison Results:
 
 | Solver | Objective_Value | Solve_Time_s | Solve_Time_std_s | Status |  |  |  |  |  |  |  |  |  |  |
 |----|----|----|----|----|----|----|----|----|----|----|----|----|----|----|
-| Ipopt | 0.594601 | 1.4046 | 0.0481 | LOCALLY_SOLVED |  |  |  |  |  |  |  |  |  |  |
-| MadNLP | 0.594601 | 1.4970 | 0.1110 | LOCALLY_SOLVED |  |  |  |  |  |  |  |  |  |  |
-| UnoSolver | 0.594513 | 1.6867 | 0.0415 | LOCALLY_SOLVED |  |  |  |  |  |  |  |  |  |  |
+| Ipopt | 0.594601 | 1.3951 | 0.0322 | LOCALLY_SOLVED |  |  |  |  |  |  |  |  |  |  |
+| MadNLP | 0.594601 | 1.4836 | 0.1382 | LOCALLY_SOLVED |  |  |  |  |  |  |  |  |  |  |
+| UnoSolver | 0.594513 | 1.6665 | 0.0406 | LOCALLY_SOLVED |  |  |  |  |  |  |  |  |  |  |
 
 ### Trajectory Comparison
 
@@ -502,14 +502,14 @@ end
 ipopt_dengue_bench = @benchmark ipopt_dengue_model = optimize_dengue(Ipopt.Optimizer, :Ipopt) samples=n_samples_dengue seconds=n_sec_dengue
 ```
 
-    BenchmarkTools.Trial: 2 samples with 1 evaluation per sample.
-     Range (min … max):   43.306 s … 494.437 s  ┊ GC (min … max): 0.00% … 0.06%
-     Time  (median):     268.872 s              ┊ GC (median):    0.06%
-     Time  (mean ± σ):   268.872 s ± 318.997 s  ┊ GC (mean ± σ):  0.06% ± 0.04%
+    BenchmarkTools.Trial: 5 samples with 1 evaluation per sample.
+     Range (min … max):  25.222 s … 29.484 s  ┊ GC (min … max): 0.00% … 0.24%
+     Time  (median):     27.804 s             ┊ GC (median):    0.25%
+     Time  (mean ± σ):   27.446 s ±  1.554 s  ┊ GC (mean ± σ):  0.36% ± 0.42%
 
-      █                                                         █  
-      █▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁█ ▁
-      43.3 s          Histogram: frequency by time          494 s <
+      ▁                     ▁           █                     ▁  
+      █▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁█▁▁▁▁▁▁▁▁▁▁▁█▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁█ ▁
+      25.2 s         Histogram: frequency by time        29.5 s <
 
      Memory estimate: 296.96 MiB, allocs estimate: 4961699.
 
@@ -530,9 +530,16 @@ ipopt_dengue_status = termination_status(ipopt_dengue_model)
 madnlp_dengue_bench = @benchmark madnlp_dengue_model = optimize_dengue(MadNLP.Optimizer, :MadNLP) samples=n_samples_dengue seconds=n_sec_dengue
 ```
 
-    BenchmarkTools.Trial: 1 sample with 1 evaluation per sample.
-     Single result which took 1089.566 s (0.22% GC) to evaluate,
-     with a memory estimate of 19.43 GiB, over 6638092 allocations.
+    BenchmarkTools.Trial: 5 samples with 1 evaluation per sample.
+     Range (min … max):  40.908 s … 47.759 s  ┊ GC (min … max): 1.30% … 1.74%
+     Time  (median):     45.940 s             ┊ GC (median):    1.19%
+     Time  (mean ± σ):   45.367 s ±  2.822 s  ┊ GC (mean ± σ):  1.40% ± 0.34%
+
+      ▁                             ▁          ▁              █  
+      █▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁█▁▁▁▁▁▁▁▁▁▁█▁▁▁▁▁▁▁▁▁▁▁▁▁▁█ ▁
+      40.9 s         Histogram: frequency by time        47.8 s <
+
+     Memory estimate: 19.43 GiB, allocs estimate: 6638092.
 
 ``` julia
 madnlp_dengue_time = round(mean(madnlp_dengue_bench.times) / 1e9, digits=4)
@@ -551,9 +558,16 @@ madnlp_dengue_status = termination_status(madnlp_dengue_model)
 uno_dengue_bench = @benchmark uno_dengue_model = optimize_dengue(() -> UnoSolver.Optimizer(preset="ipopt"), :UnoSolver) samples=n_samples_dengue seconds=n_sec_dengue
 ```
 
-    BenchmarkTools.Trial: 1 sample with 1 evaluation per sample.
-     Single result which took 2692.505 s (0.00% GC) to evaluate,
-     with a memory estimate of 295.79 MiB, over 4859815 allocations.
+    BenchmarkTools.Trial: 5 samples with 1 evaluation per sample.
+     Range (min … max):  23.915 s …   25.078 s  ┊ GC (min … max): 0.00% … 0.43%
+     Time  (median):     24.362 s               ┊ GC (median):    0.21%
+     Time  (mean ± σ):   24.497 s ± 490.040 ms  ┊ GC (mean ± σ):  0.46% ± 0.58%
+
+      █             █       █                            █      █  
+      █▁▁▁▁▁▁▁▁▁▁▁▁▁█▁▁▁▁▁▁▁█▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁█▁▁▁▁▁▁█ ▁
+      23.9 s          Histogram: frequency by time         25.1 s <
+
+     Memory estimate: 295.79 MiB, allocs estimate: 4859815.
 
 ``` julia
 uno_dengue_time = round(mean(uno_dengue_bench.times) / 1e9, digits=4)
@@ -594,9 +608,9 @@ Dengue Model - Solver Comparison Results:
 
 | Solver | Objective_Value | Solve_Time_s | Solve_Time_std_s | Status |  |  |  |  |  |  |  |  |  |  |
 |----|----|----|----|----|----|----|----|----|----|----|----|----|----|----|
-| Ipopt | 2440309.69 | 268.8716 | 318.9973 | LOCALLY_SOLVED |  |  |  |  |  |  |  |  |  |  |
-| MadNLP | 2440309.69 | 1089.5656 | NaN | LOCALLY_SOLVED |  |  |  |  |  |  |  |  |  |  |
-| UnoSolver | 2440309.69 | 2692.5054 | NaN | LOCALLY_SOLVED |  |  |  |  |  |  |  |  |  |  |
+| Ipopt | 2440309.69 | 27.4464 | 1.5538 | LOCALLY_SOLVED |  |  |  |  |  |  |  |  |  |  |
+| MadNLP | 2440309.69 | 45.3672 | 2.8220 | LOCALLY_SOLVED |  |  |  |  |  |  |  |  |  |  |
+| UnoSolver | 2440309.69 | 24.4970 | 0.4900 | LOCALLY_SOLVED |  |  |  |  |  |  |  |  |  |  |
 
 ### Control variable comparison
 
@@ -683,6 +697,6 @@ p4 = plot(p4_u1, p4_u2, p4_u3, p4_u4,
 
     Dengue Model:
       Objective value relative difference: 0.00%
-      Fastest solver: Ipopt
-      Slowest solver: UnoSolver
-      Speedup factor: 10.0×
+      Fastest solver: UnoSolver
+      Slowest solver: MadNLP
+      Speedup factor: 1.9×
