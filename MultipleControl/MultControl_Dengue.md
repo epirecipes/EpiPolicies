@@ -1,4 +1,5 @@
-# Optimisation of Multiple Control Strategies on a Dengue Fever Model.
+# Optimisation of Multiple Control Strategies on a Dengue Fever Model
+using JuMP.
 
 
 Sandra Montes (@slmontes), 2025-02-20
@@ -35,8 +36,8 @@ $$
 \frac{dI_hA}{dt} &= (1 - \psi) \lambda_h S_h + (1 - \omega) \lambda_h1 P - (\mu_h + \gamma_h) I_hA,\\
 \frac{dP}{dt} &= u_2 S_h + \rho u_3 I_h + \phi \gamma_h (I_h + I_hA) - \lambda_h1 P - \mu_h P,\\
 \frac{dR_h}{dt} &= (1 - \rho) u_3 I_h + (1 - \phi) \gamma_h (I_h + I_hA) - \mu_h R_h,\\
-\frac{dS_v}{dt} &= \mu_v N_v (1 - u_4) - \lambda_v S_v - \mu_v S_v - r_0 u_4 S_v,\\
-\frac{dI_v}{dt} &= \lambda_v S_v - \mu_v I_v - r_0 u_4 I_v.
+\frac{dS_v}{dt} &= \mu_v N_v (1 - u_4) - \lambda_v S_v (1 - u_1) - \mu_v S_v - r_0 u_4 S_v,\\
+\frac{dI_v}{dt} &= \lambda_v S_v (1 - u_1) - \mu_v I_v - r_0 u_4 I_v.
 \end{aligned}
 $$
 
@@ -70,8 +71,8 @@ function dengue_ode!(du,u,p,t)
         du[3] = (1 - ψ) * λ_h * S_h + (1 - ω) * λ_h1 * P - (μ_h + γ_h) * I_hA           # dI_hA/dt
         du[4] = u2 * S_h + ρ * u3 * I_h + φ * γ_h * (I_h + I_hA) - λ_h1 * P - μ_h * P   # dP/dt
         du[5] = (1 - ρ) * u3 * I_h + (1 - φ) * γ_h * (I_h + I_hA) - μ_h * R_h           # dR_h/dt
-        du[6] = μ_v * N_v * (1 - u4) - λ_v * S_v - μ_v * S_v - r_0 * u4 * S_v           # dS_v/dt
-        du[7] = λ_v * S_v - μ_v * I_v - r_0 * u4 * I_v                                  # dI_v/dt
+        du[6] = μ_v * N_v * (1 - u4) - λ_v * S_v * (1 - u1) - μ_v * S_v - r_0 * u4 * S_v           # dS_v/dt
+        du[7] = λ_v * S_v * (1 - u1) - μ_v * I_v - r_0 * u4 * I_v                                  # dI_v/dt
     end
     nothing
 end;
@@ -234,10 +235,10 @@ function run_optimization(u1_max, u2_max, u3_max, u4_max)
         u2[1] == u2_init
         u3[1] == u3_init
         u4[1] == u4_init
-        [t=(T+1)], u1[t] == u1[t-1]
-        [t=(T+1)], u2[t] == u2[t-1]
-        [t=(T+1)], u3[t] == u3[t-1]
-        [t=(T+1)], u4[t] == u4[t-1]
+        u1[T+1] == u1[T]
+        u2[T+1] == u2[T]
+        u3[T+1] == u3[T]
+        u4[T+1] == u4[T]
     end);
 
     # Population sizes and infection rates
@@ -256,8 +257,8 @@ function run_optimization(u1_max, u2_max, u3_max, u4_max)
     [t=1:T], I_hA[t+1] == I_hA[t] + ((1 - psi) * lambda_h[t] * S_h[t] + (1 - omega) * lambda_h1[t] * P[t] - (mu_h + gamma_h) * I_hA[t]) * dt
     [t=1:T], P[t+1] == P[t] + (u2[t] * S_h[t] + rho * u3[t] * I_h[t] + phi * gamma_h * (I_h[t] + I_hA[t]) - lambda_h1[t] * P[t] - mu_h * P[t]) * dt
     [t=1:T], R_h[t+1] == R_h[t] + ((1 - rho) * u3[t] * I_h[t] + (1 - phi) * gamma_h * (I_h[t] + I_hA[t]) - mu_h * R_h[t]) * dt
-    [t=1:T], S_v[t+1] == S_v[t] + (mu_v * N_v[t] * (1 - u4[t]) - lambda_v[t] * S_v[t] - mu_v * S_v[t] - r_0 * u4[t] * S_v[t]) * dt
-    [t=1:T], I_v[t+1] == I_v[t] + (lambda_v[t] * S_v[t] - mu_v * I_v[t] - r_0 * u4[t] * I_v[t]) * dt
+    [t=1:T], S_v[t+1] == S_v[t] + (mu_v * N_v[t] * (1 - u4[t]) - lambda_v[t] * S_v[t] * (1 - u1[t]) - mu_v * S_v[t] - r_0 * u4[t] * S_v[t]) * dt
+    [t=1:T], I_v[t+1] == I_v[t] + (lambda_v[t] * S_v[t] * (1 - u1[t]) - mu_v * I_v[t] - r_0 * u4[t] * I_v[t]) * dt
     end);
 
 
@@ -352,7 +353,7 @@ Scenario_test = create_combined_plot(t_base,
 [], 
 [S_h_baseline], 
 [I_h_baseline],
-[I_h_baseline], 
+[I_hA_baseline], 
 [P_baseline], 
 [R_h_baseline], 
 [S_v_baseline], 
@@ -392,15 +393,6 @@ end
 u1_opt_A, u2_opt_A, u3_opt_A, u4_opt_A, S_h_opt_A, I_h_opt_A, I_hA_opt_A, P_opt_A, R_h_opt_A, S_v_opt_A, I_v_opt_A = outputA_values;
 ```
 
-    ┌ Warning: Axis contains one element: 601. If intended, you can safely ignore this warning. To explicitly pass the axis with one element, pass `[601]` instead of `601`.
-    └ @ JuMP.Containers ~/.julia/packages/JuMP/xlp0s/src/Containers/DenseAxisArray.jl:185
-    ┌ Warning: Axis contains one element: 601. If intended, you can safely ignore this warning. To explicitly pass the axis with one element, pass `[601]` instead of `601`.
-    └ @ JuMP.Containers ~/.julia/packages/JuMP/xlp0s/src/Containers/DenseAxisArray.jl:185
-    ┌ Warning: Axis contains one element: 601. If intended, you can safely ignore this warning. To explicitly pass the axis with one element, pass `[601]` instead of `601`.
-    └ @ JuMP.Containers ~/.julia/packages/JuMP/xlp0s/src/Containers/DenseAxisArray.jl:185
-    ┌ Warning: Axis contains one element: 601. If intended, you can safely ignore this warning. To explicitly pass the axis with one element, pass `[601]` instead of `601`.
-    └ @ JuMP.Containers ~/.julia/packages/JuMP/xlp0s/src/Containers/DenseAxisArray.jl:185
-
 Plot optimal results obtained from Strategy A vs Baseline
 
 ``` julia
@@ -408,7 +400,7 @@ Scenario_A = create_combined_plot(t_base,
                     [u1_opt_A, u2_opt_A, u3_opt_A, u4_opt_A], 
                     [S_h_baseline, S_h_opt_A], 
                     [I_h_baseline, I_h_opt_A],
-                    [I_h_baseline, I_h_opt_A], 
+                    [I_hA_baseline, I_hA_opt_A], 
                     [P_baseline, P_opt_A], 
                     [R_h_baseline, R_h_opt_A], 
                     [S_v_baseline, S_v_opt_A], 
@@ -434,15 +426,6 @@ end
 u1_opt_B, u2_opt_B, u3_opt_B, u4_opt_B, S_h_opt_B, I_h_opt_B, I_hA_opt_B, P_opt_B, R_h_opt_B, S_v_opt_B, I_v_opt_B = outputB_values;
 ```
 
-    ┌ Warning: Axis contains one element: 601. If intended, you can safely ignore this warning. To explicitly pass the axis with one element, pass `[601]` instead of `601`.
-    └ @ JuMP.Containers ~/.julia/packages/JuMP/xlp0s/src/Containers/DenseAxisArray.jl:185
-    ┌ Warning: Axis contains one element: 601. If intended, you can safely ignore this warning. To explicitly pass the axis with one element, pass `[601]` instead of `601`.
-    └ @ JuMP.Containers ~/.julia/packages/JuMP/xlp0s/src/Containers/DenseAxisArray.jl:185
-    ┌ Warning: Axis contains one element: 601. If intended, you can safely ignore this warning. To explicitly pass the axis with one element, pass `[601]` instead of `601`.
-    └ @ JuMP.Containers ~/.julia/packages/JuMP/xlp0s/src/Containers/DenseAxisArray.jl:185
-    ┌ Warning: Axis contains one element: 601. If intended, you can safely ignore this warning. To explicitly pass the axis with one element, pass `[601]` instead of `601`.
-    └ @ JuMP.Containers ~/.julia/packages/JuMP/xlp0s/src/Containers/DenseAxisArray.jl:185
-
 Plot optimal results obtained from Strategy B vs Baseline
 
 ``` julia
@@ -450,7 +433,7 @@ Scenario_B = create_combined_plot(t_base,
                     [u1_opt_B, u2_opt_B, u3_opt_B, u4_opt_B], 
                     [S_h_baseline, S_h_opt_B], 
                     [I_h_baseline, I_h_opt_B],
-                    [I_h_baseline, I_h_opt_B], 
+                    [I_hA_baseline, I_hA_opt_B], 
                     [P_baseline, P_opt_B], 
                     [R_h_baseline, R_h_opt_B], 
                     [S_v_baseline, S_v_opt_B], 
@@ -476,15 +459,6 @@ end
 u1_opt_C, u2_opt_C, u3_opt_C, u4_opt_C, S_h_opt_C, I_h_opt_C, I_hA_opt_C, P_opt_C, R_h_opt_C, S_v_opt_C, I_v_opt_C = outputC_values;
 ```
 
-    ┌ Warning: Axis contains one element: 601. If intended, you can safely ignore this warning. To explicitly pass the axis with one element, pass `[601]` instead of `601`.
-    └ @ JuMP.Containers ~/.julia/packages/JuMP/xlp0s/src/Containers/DenseAxisArray.jl:185
-    ┌ Warning: Axis contains one element: 601. If intended, you can safely ignore this warning. To explicitly pass the axis with one element, pass `[601]` instead of `601`.
-    └ @ JuMP.Containers ~/.julia/packages/JuMP/xlp0s/src/Containers/DenseAxisArray.jl:185
-    ┌ Warning: Axis contains one element: 601. If intended, you can safely ignore this warning. To explicitly pass the axis with one element, pass `[601]` instead of `601`.
-    └ @ JuMP.Containers ~/.julia/packages/JuMP/xlp0s/src/Containers/DenseAxisArray.jl:185
-    ┌ Warning: Axis contains one element: 601. If intended, you can safely ignore this warning. To explicitly pass the axis with one element, pass `[601]` instead of `601`.
-    └ @ JuMP.Containers ~/.julia/packages/JuMP/xlp0s/src/Containers/DenseAxisArray.jl:185
-
 Plot optimal results obtained from Strategy C vs Baseline
 
 ``` julia
@@ -492,7 +466,7 @@ Scenario_C = create_combined_plot(t_base,
                     [u1_opt_C, u2_opt_C, u3_opt_C, u4_opt_C], 
                     [S_h_baseline, S_h_opt_C], 
                     [I_h_baseline, I_h_opt_C],
-                    [I_h_baseline, I_h_opt_C], 
+                    [I_hA_baseline, I_hA_opt_C], 
                     [P_baseline, P_opt_C], 
                     [R_h_baseline, R_h_opt_C], 
                     [S_v_baseline, S_v_opt_C], 
@@ -518,15 +492,6 @@ end
 u1_opt_D, u2_opt_D, u3_opt_D, u4_opt_D, S_h_opt_D, I_h_opt_D, I_hA_opt_D, P_opt_D, R_h_opt_D, S_v_opt_D, I_v_opt_D = outputD_values;
 ```
 
-    ┌ Warning: Axis contains one element: 601. If intended, you can safely ignore this warning. To explicitly pass the axis with one element, pass `[601]` instead of `601`.
-    └ @ JuMP.Containers ~/.julia/packages/JuMP/xlp0s/src/Containers/DenseAxisArray.jl:185
-    ┌ Warning: Axis contains one element: 601. If intended, you can safely ignore this warning. To explicitly pass the axis with one element, pass `[601]` instead of `601`.
-    └ @ JuMP.Containers ~/.julia/packages/JuMP/xlp0s/src/Containers/DenseAxisArray.jl:185
-    ┌ Warning: Axis contains one element: 601. If intended, you can safely ignore this warning. To explicitly pass the axis with one element, pass `[601]` instead of `601`.
-    └ @ JuMP.Containers ~/.julia/packages/JuMP/xlp0s/src/Containers/DenseAxisArray.jl:185
-    ┌ Warning: Axis contains one element: 601. If intended, you can safely ignore this warning. To explicitly pass the axis with one element, pass `[601]` instead of `601`.
-    └ @ JuMP.Containers ~/.julia/packages/JuMP/xlp0s/src/Containers/DenseAxisArray.jl:185
-
 Plot optimal results obtained from Strategy D vs Baseline
 
 ``` julia
@@ -534,7 +499,7 @@ Scenario_D = create_combined_plot(t_base,
                     [u1_opt_D, u2_opt_D, u3_opt_D, u4_opt_D], 
                     [S_h_baseline, S_h_opt_D], 
                     [I_h_baseline, I_h_opt_D],
-                    [I_h_baseline, I_h_opt_D], 
+                    [I_hA_baseline, I_hA_opt_D], 
                     [P_baseline, P_opt_D], 
                     [R_h_baseline, R_h_opt_D], 
                     [S_v_baseline, S_v_opt_D], 
@@ -560,15 +525,6 @@ end
 u1_opt_E, u2_opt_E, u3_opt_E, u4_opt_E, S_h_opt_E, I_h_opt_E, I_hA_opt_E, P_opt_E, R_h_opt_E, S_v_opt_E, I_v_opt_E = outputE_values;
 ```
 
-    ┌ Warning: Axis contains one element: 601. If intended, you can safely ignore this warning. To explicitly pass the axis with one element, pass `[601]` instead of `601`.
-    └ @ JuMP.Containers ~/.julia/packages/JuMP/xlp0s/src/Containers/DenseAxisArray.jl:185
-    ┌ Warning: Axis contains one element: 601. If intended, you can safely ignore this warning. To explicitly pass the axis with one element, pass `[601]` instead of `601`.
-    └ @ JuMP.Containers ~/.julia/packages/JuMP/xlp0s/src/Containers/DenseAxisArray.jl:185
-    ┌ Warning: Axis contains one element: 601. If intended, you can safely ignore this warning. To explicitly pass the axis with one element, pass `[601]` instead of `601`.
-    └ @ JuMP.Containers ~/.julia/packages/JuMP/xlp0s/src/Containers/DenseAxisArray.jl:185
-    ┌ Warning: Axis contains one element: 601. If intended, you can safely ignore this warning. To explicitly pass the axis with one element, pass `[601]` instead of `601`.
-    └ @ JuMP.Containers ~/.julia/packages/JuMP/xlp0s/src/Containers/DenseAxisArray.jl:185
-
 Plot optimal results obtained from Strategy E vs Baseline
 
 ``` julia
@@ -576,7 +532,7 @@ Scenario_E = create_combined_plot(t_base,
                     [u1_opt_E, u2_opt_E, u3_opt_E, u4_opt_E], 
                     [S_h_baseline, S_h_opt_E], 
                     [I_h_baseline, I_h_opt_E],
-                    [I_h_baseline, I_h_opt_E], 
+                    [I_hA_baseline, I_hA_opt_E], 
                     [P_baseline, P_opt_E], 
                     [R_h_baseline, R_h_opt_E], 
                     [S_v_baseline, S_v_opt_E], 
