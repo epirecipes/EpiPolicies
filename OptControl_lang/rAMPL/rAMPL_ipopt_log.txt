@@ -134,7 +134,7 @@ iter    objective    inf_pr   inf_du lg(mu)  ||d||  lg(rg) alpha_du alpha_pr  ls
 iter    objective    inf_pr   inf_du lg(mu)  ||d||  lg(rg) alpha_du alpha_pr  ls
  100  6.8777228e-01 3.79e-05 9.52e-02  -1.7 7.19e-02    -  1.00e+00 1.00e+00f  1
  101  6.8740539e-01 5.81e-08 5.24e+03  -3.8 1.68e-03    -  9.97e-01 1.00e+00h  1
- 102  6.6171419e-01 5.33e-04 1.40e+03  -3.8 3.62e-01    -  7.32e-01 7.49e-01f  1
+ 102  6.6171420e-01 5.33e-04 1.40e+03  -3.8 3.62e-01    -  7.32e-01 7.49e-01f  1
  103  6.5709527e-01 4.43e-05 2.16e-03  -3.8 1.11e-01    -  1.00e+00 1.00e+00h  1
  104  6.5767056e-01 2.20e-06 2.00e-05  -3.8 4.05e-02    -  1.00e+00 1.00e+00h  1
  105  6.4523515e-01 2.84e-04 4.73e+03  -5.7 2.85e-01    -  4.70e-01 7.89e-01f  1
@@ -167,12 +167,12 @@ iter    objective    inf_pr   inf_du lg(mu)  ||d||  lg(rg) alpha_du alpha_pr  ls
 Number of Iterations....: 128
 
                                    (scaled)                 (unscaled)
-Objective...............:   6.3320647641587580e-01    6.3320647641587580e-01
-Dual infeasibility......:   4.0787834274511931e-12    4.0787834274511931e-12
-Constraint violation....:   3.5209682391901254e-14    3.5209682391901254e-14
-Variable bound violation:   5.1139832504179037e-38    5.1139832504179037e-38
-Complementarity.........:   2.7076633998447456e-09    2.7076633998447456e-09
-Overall NLP error.......:   2.7076633998447456e-09    2.7076633998447456e-09
+Objective...............:   6.3320647641587557e-01    6.3320647641587557e-01
+Dual infeasibility......:   4.0787834166275348e-12    4.0787834166275348e-12
+Constraint violation....:   3.5171518475429764e-14    3.5171518475429764e-14
+Variable bound violation:   3.9836480128966402e-39    3.9836480128966402e-39
+Complementarity.........:   2.7076561153895329e-09    2.7076561153895329e-09
+Overall NLP error.......:   2.7076561153895329e-09    2.7076561153895329e-09
 
 
 Number of objective function evaluations             = 183
@@ -182,30 +182,30 @@ Number of inequality constraint evaluations          = 183
 Number of equality constraint Jacobian evaluations   = 131
 Number of inequality constraint Jacobian evaluations = 131
 Number of Lagrangian Hessian evaluations             = 128
-Total seconds in IPOPT (w/o function evaluations)    =      0.142
-Total seconds in NLP function evaluations            =      0.009
+Total seconds in IPOPT (w/o function evaluations)    =      0.185
+Total seconds in NLP function evaluations            =      0.011
 
 
 Timing Statistics:
 
-OverallAlgorithm....................:      0.148 (sys:      0.003 wall:      0.151)
+OverallAlgorithm....................:      0.177 (sys:      0.005 wall:      0.197)
  PrintProblemStatistics.............:      0.000 (sys:      0.000 wall:      0.000)
- InitializeIterates.................:      0.001 (sys:      0.000 wall:      0.001)
+ InitializeIterates.................:      0.001 (sys:      0.000 wall:      0.002)
  UpdateHessian......................:      0.002 (sys:      0.000 wall:      0.002)
  OutputIteration....................:      0.000 (sys:      0.000 wall:      0.001)
  UpdateBarrierParameter.............:      0.000 (sys:      0.000 wall:      0.000)
- ComputeSearchDirection.............:      0.052 (sys:      0.001 wall:      0.052)
- ComputeAcceptableTrialPoint........:      0.090 (sys:      0.002 wall:      0.092)
+ ComputeSearchDirection.............:      0.055 (sys:      0.001 wall:      0.056)
+ ComputeAcceptableTrialPoint........:      0.116 (sys:      0.003 wall:      0.133)
  AcceptTrialPoint...................:      0.000 (sys:      0.000 wall:      0.000)
  CheckConvergence...................:      0.002 (sys:      0.000 wall:      0.002)
-PDSystemSolverTotal.................:      0.052 (sys:      0.001 wall:      0.053)
- PDSystemSolverSolveOnce............:      0.049 (sys:      0.000 wall:      0.050)
+PDSystemSolverTotal.................:      0.055 (sys:      0.001 wall:      0.056)
+ PDSystemSolverSolveOnce............:      0.053 (sys:      0.001 wall:      0.053)
  ComputeResiduals...................:      0.002 (sys:      0.000 wall:      0.002)
- StdAugSystemSolverMultiSolve.......:      0.115 (sys:      0.001 wall:      0.116)
+ StdAugSystemSolverMultiSolve.......:      0.136 (sys:      0.002 wall:      0.149)
  LinearSystemScaling................:      0.000 (sys:      0.000 wall:      0.000)
  LinearSystemSymbolicFactorization..:      0.001 (sys:      0.000 wall:      0.001)
  LinearSystemFactorization..........:      0.000 (sys:      0.000 wall:      0.000)
- LinearSystemBackSolve..............:      0.035 (sys:      0.000 wall:      0.035)
+ LinearSystemBackSolve..............:      0.040 (sys:      0.001 wall:      0.041)
  LinearSystemStructureConverter.....:      0.000 (sys:      0.000 wall:      0.000)
   LinearSystemStructureConverterInit:      0.000 (sys:      0.000 wall:      0.000)
 QualityFunctionSearch...............:      0.000 (sys:      0.000 wall:      0.000)
@@ -216,10 +216,10 @@ Task3...............................:      0.000 (sys:      0.000 wall:      0.0
 Task4...............................:      0.000 (sys:      0.000 wall:      0.000)
 Task5...............................:      0.000 (sys:      0.000 wall:      0.000)
 Task6...............................:      0.000 (sys:      0.000 wall:      0.000)
-Function Evaluations................:      0.009 (sys:      0.000 wall:      0.009)
+Function Evaluations................:      0.010 (sys:      0.000 wall:      0.011)
  Objective function.................:      0.000 (sys:      0.000 wall:      0.000)
  Objective function gradient........:      0.000 (sys:      0.000 wall:      0.000)
- Equality constraints...............:      0.002 (sys:      0.000 wall:      0.002)
+ Equality constraints...............:      0.003 (sys:      0.000 wall:      0.003)
  Inequality constraints.............:      0.000 (sys:      0.000 wall:      0.000)
  Equality constraint Jacobian.......:      0.002 (sys:      0.000 wall:      0.002)
  Inequality constraint Jacobian.....:      0.000 (sys:      0.000 wall:      0.000)

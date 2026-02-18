@@ -1,0 +1,34 @@
+model ../rAMPL/lockdown_model.mod;
+data ../rAMPL/lockdown_data.dat;
+
+option solver ipopt;
+option presolve 0;
+option presolve_assoc 0;
+option substout 0;
+option log_file 'AMPL_IDE_log_presolve_assoc0.txt';
+option ipopt_options 'print_timing_statistics=yes';
+
+# Run 100 solves with variable reset
+for {run in 1..100} {
+    let {t in 1..T+1} S[t] := 0;
+    let {t in 1..T+1} I[t] := 0;
+    let {t in 1..T+1} C[t] := 0;
+    let {t in 1..T+1} v[t] := 0;
+    let {t in 1..T} infection[t] := 0;
+    let {t in 1..T} recovery[t] := 0;
+    solve;
+}
+
+display S, I, C, v;
+
+# Overall results:
+# AMPL IDE + Ipopt  (n=100 runs)
+#───────────────────────────────────────────────────────
+#  Lagrangian Hessian nnz             1000
+#  Eq. constraint Jacobian nnz        3203
+#  Iterations                         128
+#  Overall Algorithm (wall, s)        0.1598 ± 0.0084
+#  Objective function evals           183
+#  Lagrangian Hessian evals           128
+#  Function eval time (wall, s)       0.0093 ± 0.0010
+#  Objective value                    0.6332064764158756

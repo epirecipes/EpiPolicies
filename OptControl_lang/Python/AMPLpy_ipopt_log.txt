@@ -1,3 +1,5 @@
+Ipopt 3.14.19: print_timing_statistics=yes
+
 
 ******************************************************************************
 This program contains Ipopt, a library for large-scale nonlinear optimization.
@@ -182,26 +184,26 @@ Number of inequality constraint evaluations          = 183
 Number of equality constraint Jacobian evaluations   = 131
 Number of inequality constraint Jacobian evaluations = 131
 Number of Lagrangian Hessian evaluations             = 128
-Total seconds in IPOPT (w/o function evaluations)    =      0.142
+Total seconds in IPOPT (w/o function evaluations)    =      0.145
 Total seconds in NLP function evaluations            =      0.009
 
 
 Timing Statistics:
 
-OverallAlgorithm....................:      0.148 (sys:      0.003 wall:      0.151)
+OverallAlgorithm....................:      0.151 (sys:      0.003 wall:      0.154)
  PrintProblemStatistics.............:      0.000 (sys:      0.000 wall:      0.000)
- InitializeIterates.................:      0.001 (sys:      0.000 wall:      0.001)
+ InitializeIterates.................:      0.001 (sys:      0.000 wall:      0.002)
  UpdateHessian......................:      0.002 (sys:      0.000 wall:      0.002)
- OutputIteration....................:      0.000 (sys:      0.000 wall:      0.001)
+ OutputIteration....................:      0.000 (sys:      0.000 wall:      0.000)
  UpdateBarrierParameter.............:      0.000 (sys:      0.000 wall:      0.000)
- ComputeSearchDirection.............:      0.052 (sys:      0.001 wall:      0.052)
- ComputeAcceptableTrialPoint........:      0.090 (sys:      0.002 wall:      0.092)
+ ComputeSearchDirection.............:      0.053 (sys:      0.001 wall:      0.054)
+ ComputeAcceptableTrialPoint........:      0.092 (sys:      0.002 wall:      0.093)
  AcceptTrialPoint...................:      0.000 (sys:      0.000 wall:      0.000)
  CheckConvergence...................:      0.002 (sys:      0.000 wall:      0.002)
-PDSystemSolverTotal.................:      0.052 (sys:      0.001 wall:      0.053)
- PDSystemSolverSolveOnce............:      0.049 (sys:      0.000 wall:      0.050)
+PDSystemSolverTotal.................:      0.054 (sys:      0.001 wall:      0.054)
+ PDSystemSolverSolveOnce............:      0.051 (sys:      0.000 wall:      0.052)
  ComputeResiduals...................:      0.002 (sys:      0.000 wall:      0.002)
- StdAugSystemSolverMultiSolve.......:      0.115 (sys:      0.001 wall:      0.116)
+ StdAugSystemSolverMultiSolve.......:      0.118 (sys:      0.001 wall:      0.119)
  LinearSystemScaling................:      0.000 (sys:      0.000 wall:      0.000)
  LinearSystemSymbolicFactorization..:      0.001 (sys:      0.000 wall:      0.001)
  LinearSystemFactorization..........:      0.000 (sys:      0.000 wall:      0.000)
@@ -216,13 +218,15 @@ Task3...............................:      0.000 (sys:      0.000 wall:      0.0
 Task4...............................:      0.000 (sys:      0.000 wall:      0.000)
 Task5...............................:      0.000 (sys:      0.000 wall:      0.000)
 Task6...............................:      0.000 (sys:      0.000 wall:      0.000)
-Function Evaluations................:      0.009 (sys:      0.000 wall:      0.009)
+Function Evaluations................:      0.008 (sys:      0.000 wall:      0.009)
  Objective function.................:      0.000 (sys:      0.000 wall:      0.000)
  Objective function gradient........:      0.000 (sys:      0.000 wall:      0.000)
  Equality constraints...............:      0.002 (sys:      0.000 wall:      0.002)
  Inequality constraints.............:      0.000 (sys:      0.000 wall:      0.000)
  Equality constraint Jacobian.......:      0.002 (sys:      0.000 wall:      0.002)
  Inequality constraint Jacobian.....:      0.000 (sys:      0.000 wall:      0.000)
- Lagrangian Hessian.................:      0.005 (sys:      0.000 wall:      0.005)
+ Lagrangian Hessian.................:      0.004 (sys:      0.000 wall:      0.004)
 
 EXIT: Optimal Solution Found.
+ 
+Ipopt 3.14.19: Optimal Solution Found
